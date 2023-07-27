@@ -11,8 +11,9 @@ import BoardingLayout from "./components/BoardingLayout";
 import Registration, {
   action as registrationAction,
 } from "./pages/registration/Registration";
-
 import Login, { action as loginAction } from "./pages/login/Login";
+import Layout from "./components/Layout";
+import Home from "./pages/Home/Home";
 
 export default function App() {
   const routes = createBrowserRouter(
@@ -31,6 +32,10 @@ export default function App() {
             action={registrationAction}
           />
           <Route path="login" element={<Login />} action={loginAction} />
+        </Route>
+
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
         </Route>
       </>
     )

@@ -17,7 +17,7 @@ export async function action({ request }) {
 
   try {
     await loginUser({ email, password });
-    throw redirect("/home");
+    throw redirect("/");
   } catch (err) {
     return err;
   }
