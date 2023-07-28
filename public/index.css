@@ -27,8 +27,28 @@ nav.active {
     text-decoration: underline;
 }
 
+.promos-wrapper {
+    display: flex;
+    overflow: hidden;
+}
+
+.homeHeader--dots {
+    position: absolute;
+    left: 50%;
+    display: flex;
+}
+
+/* .homeHeader--dots div {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin: 5px;
+    background-color: rgb(203, 203, 203);
+} */
+
 
 .promo {
+    min-width: 90vw;
     display: flex;
     justify-content: space-around;
     padding: 40px 20px 0 20px;
@@ -56,7 +76,146 @@ nav.active {
     margin: 0;
 }
 
+/* layout nav*/
+.layout-nav {
+    margin: 20px 30px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.layout-nav a {
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    width: calc(100%/3);
+}
+
+
+.solidUnderLine>.layout-nav--underline--solid {
+    margin-top: 5px;
+    width: 100%;
+    height: 3px;
+    background-color: #5D4037;
+}
+
+.lightUnderLine>.layout-nav--underline--light {
+    margin-top: 5px;
+    width: 100%;
+    height: 3px;
+    background-color: #CACACA;
+}
+
+/* filters */
+
+.filters {
+    margin: 10px 30px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.filters a {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #3C3C3C;
+    font-weight: bold;
+    background-color: #efebe9;
+}
+
+.filters a:hover {
+    background-color: #5d403777;
+}
+
+.filters a>img {
+    margin-right: 5px;
+}
+
+.filters a.filter--active {
+    color: white;
+    background-color: #5D4037;
+}
+
+/* main */
+
+main {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.coffee-wrapper {
+    width: Min(90%, 1000px);
+    display: grid;
+    grid-template: 1fr/1fr 3fr 1fr;
+    padding: 15px 0;
+}
+
+.coffee-wrapper>* {
+    margin: 0 20px;
+}
+
+.coffee-Img-and-rating {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.coffeeImg {
+    scale: 1.2;
+}
+
+.coffeeImg--backgorund {
+    width: 66px;
+    height: 69px;
+    background-color: #bfbfb891;
+    border-radius: 50%;
+    position: absolute;
+    z-index: -1;
+}
+
+.coffee--rating {
+    background-color: #CACACA;
+    border-radius: 20px;
+    padding: 0 5px;
+    position: absolute;
+    top: 70%;
+}
+
+.about-coffee>* {
+    margin: 5px;
+}
+
+.coffee-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.coffee-price>* {
+    margin: 5px;
+}
+
+.cofee-price--old {
+    text-decoration: line-through;
+    font-size: .8em;
+    color: #CACACA;
+}
+
 @media only screen and (max-width:500px) {
+    main {
+        padding: 5px;
+        margin: 0;
+    }
 
     .promo--img {
         width: 153px;
@@ -74,5 +233,36 @@ nav.active {
     .promo--subTitle,
     :where(h4, h6) {
         font-size: .8em;
+    }
+
+    .about-coffee h3 {
+        font-size: .9em;
+    }
+
+    .about-coffee--description {
+        font-size: .9em;
+    }
+}
+
+@media only screen and (max-width:750px) {
+    .filters {
+        grid-template: 1fr 1fr/ 1fr 1fr;
+        gap: 10px;
+    }
+
+    main {
+        padding: 5px;
+        margin: 0;
+    }
+}
+
+@media only screen and (min-width:750px) {
+    .coffee-wrapper {
+        font-size: 1.2em;
+    }
+
+
+    .coffee-Img-and-rating {
+        scale: 1.1;
     }
 }

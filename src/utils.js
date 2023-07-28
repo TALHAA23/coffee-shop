@@ -2,7 +2,8 @@ import {
     redirect
 } from "react-router-dom";
 import {
-    usersCollection
+    usersCollection,
+    productsCollection
 } from "./firebase";
 
 import {
@@ -47,4 +48,21 @@ export async function loginUser({
         message: 'user exists'
     }
 
+}
+
+export async function getProducts(productOrigin) {
+    // await sleep();
+    const data = [];
+    try {
+        await getDocs(productsCollection).then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const docData = doc.data();
+                if (docData.origin == productOrigin)
+                    data.push(docData);
+            });
+        })
+    } catch (err) {
+        throw err
+    }
+    return data;
 }
