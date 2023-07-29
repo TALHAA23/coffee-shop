@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 export default function Product(props) {
   return (
-    <div className="coffee-wrapper">
+    <Link to={props.id} className="coffee-wrapper">
       <div className="coffee-Img-and-rating">
         <div className="coffeeImg--backgorund"></div>
         <img className="coffeeImg" src={props.imgUrl} />
@@ -23,6 +24,6 @@ export default function Product(props) {
           <p className="cofee-price--old">{`$${props.price.originalPrice}`}</p>
         )}
       </div>
-    </div>
+    </Link>
   );
 }

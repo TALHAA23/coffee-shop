@@ -11,7 +11,7 @@ export default function Filters() {
 
   function generateSearchParams(key, value) {
     const query = new URLSearchParams(searchParams);
-    if (query.get(key)) query.delete(key);
+    if (query.has(key)) query.delete(key);
     else query.set(key, value);
     return `?${query.toString()}`;
   }
@@ -27,20 +27,21 @@ export default function Filters() {
       <NavLink
         to={generateSearchParams(SEARCHPARAMS.RATING, "4.5+")}
         className={
-          searchParams.get(SEARCHPARAMS.RATING) ? "filter--active" : ""
+          searchParams.has(SEARCHPARAMS.RATING) ? "filter--active" : ""
         }
       >
         <img src="/icons/star.svg" /> Rating 4.5+
       </NavLink>
       <NavLink
         to={generateSearchParams(SEARCHPARAMS.PRICE, "lowtohigh")}
-        className={searchParams.get(SEARCHPARAMS.PRICE) ? "filter--active" : ""}
+        className={searchParams.has(SEARCHPARAMS.PRICE) ? "filter--active" : ""}
       >
-        <img src="/icons/dollar-sign.svg" /> Price
+        <img src="/icons/dollar-sign.svg" />{" "}
+        {searchParams.has(SEARCHPARAMS.PRICE) ? "Low to high" : "Price"}
       </NavLink>
       <NavLink
         to={generateSearchParams(SEARCHPARAMS.PROMO, "true")}
-        className={searchParams.get(SEARCHPARAMS.PROMO) ? "filter--active" : ""}
+        className={searchParams.has(SEARCHPARAMS.PROMO) ? "filter--active" : ""}
       >
         <img src="/icons/discount.svg" /> Promo
       </NavLink>

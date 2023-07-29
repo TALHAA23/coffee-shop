@@ -1,14 +1,23 @@
-import { defer, useLoaderData, Await, useSearchParams } from "react-router-dom";
-import { Suspense, useEffect } from "react";
+import {
+  defer,
+  useLoaderData,
+  Await,
+  useSearchParams,
+  Link,
+} from "react-router-dom";
+import { Suspense } from "react";
 import Product from "../../components/Product";
 import { getProducts } from "../../utils";
-export function loader() {
-  const coffeePromise = getProducts("coffee");
+
+export function loader({ request }) {
+  const url = new URL(request.url).pathname.split("/")[1];
+  const coffeePromise = getProducts(url || "coffee");
   return defer({ coffeePromise });
 }
 
 export default function Coffee() {
   const [searchParams, setSearchParmas] = useSearchParams();
+
   const dataPromise = useLoaderData();
   const [ratingFilter, priceFilter, promoFilter] = [
     searchParams.get("rating"),

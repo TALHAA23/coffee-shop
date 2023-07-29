@@ -1,9 +1,12 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
 import Nav from "./Nav";
 import Promo from "./Promo";
 import Filters from "./Filters";
 
 export default function HomeLayout() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const restoreParams = searchParams.toString();
+
   return (
     <header className="homeHeader">
       <Nav />
@@ -13,7 +16,7 @@ export default function HomeLayout() {
 
       <div className="layout-nav">
         <NavLink
-          to="/"
+          to={`/?${restoreParams}`}
           className={({ isActive }) =>
             isActive ? "solidUnderLine" : "lightUnderLine"
           }
@@ -22,7 +25,7 @@ export default function HomeLayout() {
           <div className="layout-nav--underline--solid layout-nav--underline--light"></div>
         </NavLink>
         <NavLink
-          to="non-coffee"
+          to={`non-coffee?${restoreParams}`}
           className={({ isActive }) =>
             isActive ? "solidUnderLine" : "lightUnderLine"
           }
@@ -31,7 +34,7 @@ export default function HomeLayout() {
           <div className="layout-nav--underline--solid layout-nav--underline--light"></div>
         </NavLink>
         <NavLink
-          to="pastery"
+          to={`/pastry?${restoreParams}`}
           className={({ isActive }) =>
             isActive ? "solidUnderLine" : "lightUnderLine"
           }

@@ -156,6 +156,8 @@ main {
     display: grid;
     grid-template: 1fr/1fr 3fr 1fr;
     padding: 15px 0;
+    text-decoration: none;
+    color: black;
 }
 
 .coffee-wrapper>* {
@@ -256,6 +258,253 @@ main {
     }
 }
 
+/* order form */
+.productDetailsWrapper {
+    width: 100%;
+    height: 90vh;
+    overflow-y: scroll;
+    padding-top: 52px;
+}
+
+.productDetails--header {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 52px;
+    background-color: white;
+    padding-left: 10px;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    box-shadow: 0px 1px 3px 0px #7d7676;
+}
+
+.productDetails--header img {
+    margin-right: 10px;
+}
+
+.productDetails--footer {
+    position: fixed;
+    width: 100%;
+    background-color: white;
+    z-index: 2;
+    bottom: 0;
+    left: 0;
+    padding: 0 20px;
+    box-shadow: 0px -1px 2px #7d7676;
+}
+
+.productDetails--imgBg img {
+    scale: 2;
+}
+
+.productDetails--imgBg {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+    background-color: #efebe9;
+}
+
+.orderForm {
+    max-width: 800px;
+    padding: 20px 0;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.orderForm>*:not(:last-child) {
+    box-shadow: 0px 0px 3px 0px #b7adad;
+    border-radius: 10px;
+    padding: 5px 5px;
+}
+
+.orderForm--sectionTitle {
+    margin: 0;
+}
+
+.orderForm--aboutProduct>* {
+    display: flex;
+    justify-content: space-between;
+}
+
+.orderForm--aboutProduct * {
+    margin: 5px 0;
+}
+
+
+/* form countine after counter */
+/* counter */
+.counter {
+    display: flex;
+    width: 73px;
+    height: 27px;
+    border-radius: 5px;
+}
+
+.counter>* {
+    width: calc(100%/3);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.counter--button {
+    color: white;
+    font-weight: bold;
+    background-color: #5D4037;
+    cursor: pointer;
+    user-select: none;
+}
+
+.counter--display {
+    border: 1px solid #5D4037
+}
+
+.dot-divider {
+    width: 3px;
+    height: 3px;
+    background-color: #5D4037;
+    border-radius: 50%;
+}
+
+/* continue */
+
+.aboutProducts--rating {
+    display: flex;
+    align-items: center;
+}
+
+.aboutProducts--rating--detials {
+    display: flex;
+    align-items: center;
+}
+
+.aboutProducts--rating--detials * {
+    margin: 3px;
+}
+
+.orderForm--orderForm {
+    border: 1px solid blue;
+}
+
+.orderForm--inputwrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.orderForm--inputwrapper p {
+    margin: 8px 0;
+    color: #6E3931;
+}
+
+.orderForm--option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.orderForm--option label {
+    font-weight: bold;
+    border: 1px solid #5D4037;
+    border-radius: 7px;
+    color: #5D4037;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.customize--radio input {
+    display: none;
+}
+
+/* checkbox */
+input[type="checkbox"] {
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+}
+
+
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+input[type="checkbox"]:focus {
+    outline: max(2px, 0.15em) solid currentColor;
+    outline-offset: max(2px, 0.15em);
+}
+
+.orderForm--option input:checked+label {
+    color: white;
+    background-color: #5D4037;
+}
+
+.orderForm--notes>.orderForm--inputwrapper {
+    flex-direction: column;
+}
+
+.orderForm--notes>.orderForm--inputwrapper textarea {
+    align-self: center;
+    width: 90%;
+    height: 70px;
+    border-radius: 10px;
+    font-family: 'Outfit',
+        sans-serif;
+    padding: 10px;
+    resize: none;
+}
+
+.productDetails--footer--price>* {
+    margin: 0;
+}
+
+.orderForm button {
+    width: 132px;
+    height: 48px;
+    color: white;
+    background-color: #5D4037;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 10px;
+
+}
+
+.productDetails--footer {
+    height: 66px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 @media only screen and (min-width:750px) {
     .coffee-wrapper {
         font-size: 1.2em;
@@ -264,5 +513,11 @@ main {
 
     .coffee-Img-and-rating {
         scale: 1.1;
+    }
+}
+
+@media only screen and (max-width:400px) {
+    .orderForm--option label {
+        font-size: .8em;
     }
 }

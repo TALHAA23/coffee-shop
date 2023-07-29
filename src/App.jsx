@@ -20,6 +20,10 @@ import Login, { action as loginAction } from "./pages/login/Login";
 import HomeLayout from "./components/HomeLayout";
 import Coffee, { loader as coffeeLoader } from "./pages/Home/Coffee";
 
+import ProductDetails, {
+  loader as productDetailsLoader,
+} from "./components/ProductDetails";
+
 export default function App() {
   const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -46,7 +50,34 @@ export default function App() {
             loader={coffeeLoader}
             errorElement={<Error />}
           />
+          <Route
+            path="non-coffee"
+            element={<Coffee />}
+            loader={coffeeLoader}
+            errorElement={<Error />}
+          />
+          <Route
+            path="pastry"
+            element={<Coffee />}
+            loader={coffeeLoader}
+            errorElement={<Error />}
+          />
         </Route>
+        <Route
+          path="/:id"
+          element={<ProductDetails />}
+          loader={productDetailsLoader}
+        />
+        <Route
+          path="/non-coffee/:id"
+          element={<ProductDetails />}
+          loader={productDetailsLoader}
+        />
+        <Route
+          path="/pastry/:id"
+          element={<ProductDetails />}
+          loader={productDetailsLoader}
+        />
       </>
     )
   );
