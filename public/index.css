@@ -38,13 +38,74 @@ nav.active {
     display: flex;
 }
 
-/* .homeHeader--dots div {
-    border-radius: 50%;
-    width: 15px;
-    height: 15px;
-    margin: 5px;
-    background-color: rgb(203, 203, 203);
-} */
+/* button */
+.button {
+    width: 132px;
+    height: 48px;
+    color: white;
+    background-color: #5D4037;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: .8;
+}
+
+/* add order popup */
+.order-confirmation--popup {
+    position: fixed;
+    bottom: 10px;
+    left: 20px;
+    z-index: 1;
+    background-color: #5D4037;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    color: white;
+    animation: hidePopup 10s ease-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes hidePopup {
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .3;
+        display: none;
+    }
+}
+
+.confirmation-popup--orderDetails {
+    display: flex;
+    flex-direction: column;
+}
+
+.confirmation-popup--orderDetails>* {
+    margin: 0;
+}
+
+.confirmation-popup--orderCost {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.confirmation-popup--orderCost>img {
+    margin-left: 5px;
+    scale: .9;
+}
 
 
 .promo {
@@ -145,7 +206,6 @@ nav.active {
 main {
     margin: 20px;
     padding: 20px;
-    border: 1px solid red;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -469,17 +529,79 @@ input[type="checkbox"]:focus {
     margin: 0;
 }
 
-.orderForm button {
-    width: 132px;
-    height: 48px;
-    color: white;
-    background-color: #5D4037;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    border-radius: 10px;
+/* checkout */
 
+.checkout-wrapper {
+    max-width: 600px;
+    border: 1px solid red;
+    margin: auto;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.checkout-wrapper .checkout-coffee-wrapper {
+    width: 100%;
+    font-size: 1em;
+}
+
+.checkout--edit {
+    display: flex;
+    cursor: pointer;
+}
+
+.checkout--edit--text {
+    margin: 0;
+    margin-left: 10px;
+}
+
+.checkout--edit:hover {
+    opacity: .8;
+}
+
+.checkout--trash-and-counter {
+    margin-right: -4px;
+    display: flex;
+    gap: 10px
+}
+
+.checkout--counter {
+    scale: .8;
+}
+
+.checkout-sections--headerText {
+    margin: 0;
+}
+
+.checkout-sections>* {
+    border: 1px solid purple;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.checkout-sections>* p {
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.checkout-time label {
+    width: 95%;
+}
+
+.checkout--payment-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+}
+
+.payment-summery--details>div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.payment-summery--details p {
+    margin: 0;
 }
 
 .productDetails--footer {
@@ -517,6 +639,10 @@ input[type="checkbox"]:focus {
 }
 
 @media only screen and (max-width:400px) {
+    .coffee-wrapper>* {
+        margin: 0;
+    }
+
     .orderForm--option label {
         font-size: .8em;
     }

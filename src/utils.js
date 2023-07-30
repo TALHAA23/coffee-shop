@@ -4,6 +4,7 @@ import {
 import {
     usersCollection,
     productsCollection,
+    ordersCollection,
     db
 } from "./firebase";
 
@@ -54,23 +55,23 @@ export async function loginUser({
 }
 
 export async function getProducts(productOrigin) {
-    // await sleep();
-    // console.log(productOrigin)
-    // const data = [{
-    //     title: "some title",
-    //     price: {
-    //         originalPrice: 23,
-    //         salePrice: 10
-    //     },
-    //     imgUrl: '/coffee-images/caffe-mocha.png',
-    //     origin: 'non-coffee',
-    //     rating: 3.4,
-    //     desc: 'this is a long desc that your are reading right know'
-    // }];
-    // if (data.origin != productOrigin) return [];
-    // return data;
+    await sleep();
+    console.log(productOrigin)
+    const data = [{
+        title: "some title",
+        price: {
+            originalPrice: 23,
+            salePrice: 10
+        },
+        imgUrl: '/coffee-images/caffe-mocha.png',
+        origin: 'non-coffee',
+        rating: 3.4,
+        desc: 'this is a long desc that your are reading right know'
+    }];
+    if (data.origin != productOrigin) return [];
+    return data;
 
-    const data = [];
+    // const data = [];
 
     try {
         await getDocs(productsCollection).then((querySnapshot) => {
@@ -90,7 +91,7 @@ export async function getProducts(productOrigin) {
 }
 
 export async function getProductById(id) {
-    // await sleep();
+    await sleep();
     return {
         title: "some title",
         price: {
@@ -107,4 +108,25 @@ export async function getProductById(id) {
     if (docSnap.exists())
         return docSnap.data();
     else throw new Error("Prodcut Doesn't exist")
+}
+
+export async function saveOrder(creds) {
+    // await sleep();
+    // return '000120324'
+    try {
+        const docRef = await addDoc(ordersCollection, creds);
+        return docRef.id;
+    } catch (err) {
+        return err;
+    }
+}
+
+export async function getOrderById(id) {
+    if (!id) return null;
+    // await sleep();
+    const docRef = doc(ordersCollection, id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists())
+        return docSnap.data();
+    else throw new Error("Order Doesn't exist")
 }

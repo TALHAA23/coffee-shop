@@ -38,7 +38,9 @@ export default function Coffee() {
         (a, b) => a.price.originalPrice - b.price.originalPrice
       );
 
-    const coffeeElements = coffees.map((coffee) => <Product {...coffee} />);
+    const coffeeElements = coffees.map((coffee) => (
+      <Product key={coffee.id} {...coffee} />
+    ));
     return coffeeElements;
   }
   return (

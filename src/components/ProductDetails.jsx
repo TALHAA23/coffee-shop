@@ -1,7 +1,19 @@
-import { Form, defer, useLoaderData, Await } from "react-router-dom";
+import {
+  Form,
+  defer,
+  useLoaderData,
+  Await,
+  Link,
+  useActionData,
+  useNavigation,
+  useLocation,
+  Navigate,
+  redirect,
+} from "react-router-dom";
 import { getProductById } from "../utils";
 import { Suspense, useEffect, useState } from "react";
 import { TOPPING } from "../pages/Constants";
+import { saveOrder } from "../utils";
 
 export function loader({ params }) {
   const productId = params.id;
@@ -9,7 +21,33 @@ export function loader({ params }) {
   return defer({ productDetailsPromise });
 }
 
+export async function action({ request }) {
+  const formData = await request.formData();
+  const title = formData.get("title");
+  const desc = formData.get("desc");
+  const total = formData.get("total");
+  const quantity = formData.get("quantity");
+  const orderInfo = {
+    title,
+    desc,
+    total,
+    quantity,
+  };
+
+  try {
+    const orderNumber = await saveOrder(orderInfo).then((res) => res);
+    localStorage.setItem("orderNumber", orderNumber);
+    throw redirect("/");
+  } catch (err) {
+    return err;
+  }
+}
+
 export default function ProductDetails() {
+  const actionResponse = useActionData();
+  const { state } = useLocation();
+
+  const navigation = useNavigation();
   const dataPromise = useLoaderData();
   const [counter, setCounter] = useState(1);
   const [currentCost, setCurrentCost] = useState(null);
@@ -50,19 +88,30 @@ export default function ProductDetails() {
     }, []);
     return (
       <div className="productDetailsWrapper">
+        {actionResponse && (
+          <p className="form-success order-form-state">
+            {actionResponse.message}
+          </p>
+        )}
+        {navigation.state == "submitting" && (
+          <p className="form--waiting order-form-state">Please Wait...</p>
+        )}
         <div className="productDetails--header">
-          <img src="/icons/arrow-left.svg" /> Customize Order
+          <Link to={`..?${state?.search}`} relative="path">
+            <img src="/icons/arrow-left.svg" />
+          </Link>
+          Customize Order
         </div>
         <div className="productDetails--imgBg">
           <img src={props.imgUrl} alt="" />
         </div>
 
-        <Form className="orderForm">
+        <Form method="post" className="orderForm">
           <div className="orderForm--aboutProduct">
             <h4 className="orderForm--sectionTitle">{props.origin}</h4>
             <div className="aboutProduct--title-price">
               <h3>{props.title}</h3>
-              <h3>{`$${currentCost}`}</h3>
+              <h3>${currentCost?.toFixed(2)}</h3>
             </div>
             <div className="aboutProduct--desc-counter">
               <p>{props.desc} </p>
@@ -93,9 +142,9 @@ export default function ProductDetails() {
             <div className="orderForm--inputwrapper customize--radio">
               <p>Varinet</p>
               <div className="orderForm--option">
-                <input type="radio" name="varient" id="ice" />
+                <input type="radio" name="varient" id="ice" value="ice" />
                 <label htmlFor="ice">Ice</label>
-                <input type="radio" name="varient" id="hot" />
+                <input type="radio" name="varient" id="hot" value="hot" />
                 <label htmlFor="hot">Hot</label>
               </div>
             </div>
@@ -103,11 +152,11 @@ export default function ProductDetails() {
             <div className="orderForm--inputwrapper customize--radio">
               <p>Size</p>
               <div className="orderForm--option">
-                <input type="radio" name="size" id="regular" />
+                <input type="radio" name="size" id="regular" value="regular" />
                 <label htmlFor="regular">Regular</label>
-                <input type="radio" name="size" id="medium" />
+                <input type="radio" name="size" id="medium" value="medium" />
                 <label htmlFor="medium">Medium</label>
-                <input type="radio" name="size" id="large" />
+                <input type="radio" name="size" id="large" value="large" />
                 <label htmlFor="large">Large</label>
               </div>
             </div>
@@ -115,9 +164,14 @@ export default function ProductDetails() {
             <div className="orderForm--inputwrapper customize--radio">
               <p>Suger</p>
               <div className="orderForm--option">
-                <input type="radio" name="suger" id="suger-normal" />
+                <input
+                  type="radio"
+                  name="suger"
+                  id="suger-normal"
+                  value="normal"
+                />
                 <label htmlFor="suger-normal">Normal</label>
-                <input type="radio" name="suger" id="suger-less" />
+                <input type="radio" name="suger" id="suger-less" value="less" />
                 <label htmlFor="suger-less">Less</label>
               </div>
             </div>
@@ -125,9 +179,9 @@ export default function ProductDetails() {
             <div className="orderForm--inputwrapper customize--radio">
               <p>Ice</p>
               <div className="orderForm--option">
-                <input type="radio" name="ice" id="ice-normal" />
+                <input type="radio" name="ice" id="ice-normal" value="normal" />
                 <label htmlFor="ice-normal">Normal</label>
-                <input type="radio" name="ice" id="ice-less" />
+                <input type="radio" name="ice" id="ice-less" value="less" />
                 <label htmlFor="ice-less">Less</label>
               </div>
             </div>
@@ -141,6 +195,7 @@ export default function ProductDetails() {
               <div className="orderForm--option">
                 <label htmlFor="extra-expressa">{`$${TOPPING.ExtraExpressa}`}</label>
                 <input
+                  name="extra-expressa"
                   type="checkbox"
                   id="extra-expressa"
                   value={TOPPING.ExtraExpressa}
@@ -154,6 +209,7 @@ export default function ProductDetails() {
               <div className="orderForm--option">
                 <label htmlFor="cincau">{`$${TOPPING.Cincau}`}</label>
                 <input
+                  name="cincau"
                   type="checkbox"
                   id="cincau"
                   value={TOPPING.Cincau}
@@ -166,6 +222,7 @@ export default function ProductDetails() {
               <div className="orderForm--option">
                 <label htmlFor="coffee-jelly">{`$${TOPPING.CoffeeJelly}`}</label>
                 <input
+                  name="coffee-jelly"
                   type="checkbox"
                   id="coffee-jelly"
                   value={TOPPING.CoffeeJelly}
@@ -178,6 +235,7 @@ export default function ProductDetails() {
               <div className="orderForm--option">
                 <label htmlFor="chocolate-ice-cream">{`$${TOPPING.ChocolateIceCream}`}</label>
                 <input
+                  name="chocolate-ice-cream"
                   type="checkbox"
                   id="chocolate-ice-cream"
                   value={TOPPING.ChocolateIceCream}
@@ -194,6 +252,7 @@ export default function ProductDetails() {
                 placeholder="optional"
                 cols="10"
                 rows="10"
+                maxLength="100"
               ></textarea>
             </div>
           </div>
@@ -201,9 +260,48 @@ export default function ProductDetails() {
           <div className="productDetails--footer">
             <div className="productDetails--footer--price">
               <small>Total</small>
-              <h3>{`$${currentCost}`}</h3>
+              <h3>${currentCost?.toFixed(2)}</h3>
             </div>
-            <button>Add Order</button>
+            <button
+              className="button"
+              disabled={navigation.state == "submitting" ? true : false}
+            >
+              {navigation.state == "submitting"
+                ? "Adding Order..."
+                : "Add Order"}
+            </button>
+          </div>
+
+          <div className="hiddenInputs">
+            <input
+              hidden
+              readOnly
+              type="number"
+              name="total"
+              value={currentCost || 0}
+            />
+            <input
+              hidden
+              readOnly
+              type="number"
+              name="topping"
+              value={totalToppingCost}
+            />
+            <input
+              hidden
+              readOnly
+              type="number"
+              name="quantity"
+              value={counter}
+            />
+            <input
+              hidden
+              readOnly
+              type="text"
+              name="title"
+              value={props.title}
+            />
+            <input hidden readOnly type="text" name="desc" value={props.desc} />
           </div>
         </Form>
       </div>

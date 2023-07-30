@@ -1,7 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 export default function Product(props) {
+  const [searchParams, setSearchParams] = useSearchParams();
   return (
-    <Link to={props.id} className="coffee-wrapper">
+    <Link
+      to={props.id}
+      className="coffee-wrapper"
+      state={{ search: searchParams.toString() }}
+    >
       <div className="coffee-Img-and-rating">
         <div className="coffeeImg--backgorund"></div>
         <img className="coffeeImg" src={props.imgUrl} />

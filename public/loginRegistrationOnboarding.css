@@ -129,6 +129,22 @@ body {
     border-radius: 10px;
 }
 
+.order-form-state {
+    position: absolute;
+    z-index: 1;
+    max-width: 4cm;
+    border-radius: 0;
+    right: 20px;
+    top: -5px;
+    animation: dropDown 1s ease-in 1 forwards;
+}
+
+@keyframes dropDown {
+    to {
+        top: 50px;
+    }
+}
+
 
 .form {
     display: flex;

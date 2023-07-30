@@ -17,12 +17,17 @@ import Registration, {
 } from "./pages/registration/Registration";
 import Login, { action as loginAction } from "./pages/login/Login";
 
-import HomeLayout from "./components/HomeLayout";
+import HomeLayout, {
+  loader as homeLayoutLoader,
+} from "./components/HomeLayout";
 import Coffee, { loader as coffeeLoader } from "./pages/Home/Coffee";
 
 import ProductDetails, {
   loader as productDetailsLoader,
+  action as productDetailsAction,
 } from "./components/ProductDetails";
+
+import Checkout from "./pages/checkout/Checkout";
 
 export default function App() {
   const routes = createBrowserRouter(
@@ -43,7 +48,7 @@ export default function App() {
           <Route path="login" element={<Login />} action={loginAction} />
         </Route>
 
-        <Route path="/" element={<HomeLayout />}>
+        <Route path="/" element={<HomeLayout />} loader={homeLayoutLoader}>
           <Route
             index
             element={<Coffee />}
@@ -67,17 +72,22 @@ export default function App() {
           path="/:id"
           element={<ProductDetails />}
           loader={productDetailsLoader}
+          action={productDetailsAction}
         />
         <Route
           path="/non-coffee/:id"
           element={<ProductDetails />}
           loader={productDetailsLoader}
+          action={productDetailsAction}
         />
         <Route
           path="/pastry/:id"
           element={<ProductDetails />}
           loader={productDetailsLoader}
+          action={productDetailsAction}
         />
+
+        <Route path="/checkout" element={<Checkout />} />
       </>
     )
   );
