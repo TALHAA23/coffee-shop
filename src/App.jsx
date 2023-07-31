@@ -27,7 +27,12 @@ import ProductDetails, {
   action as productDetailsAction,
 } from "./components/ProductDetails";
 
-import Checkout from "./pages/checkout/Checkout";
+import Checkout, {
+  loader as checkoutLoader,
+  action as checkoutAction,
+} from "./pages/checkout/Checkout";
+import PaymentMethod from "./pages/checkout/PaymentMethod";
+import Vouchers from "./pages/checkout/Vouchers";
 
 export default function App() {
   const routes = createBrowserRouter(
@@ -87,7 +92,16 @@ export default function App() {
           action={productDetailsAction}
         />
 
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout">
+          <Route
+            index
+            element={<Checkout />}
+            loader={checkoutLoader}
+            action={checkoutAction}
+          />
+          <Route path="payment-method" element={<PaymentMethod />} />
+          <Route path="vouchers" element={<Vouchers />} />
+        </Route>
       </>
     )
   );

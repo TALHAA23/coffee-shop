@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    font-family: 'Outfit', sans-serif !important;
 }
 
 body {
@@ -55,6 +56,12 @@ nav.active {
 .button:disabled {
     cursor: not-allowed;
     opacity: .8;
+}
+
+.bottomRightButton {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
 
 /* add order popup */
@@ -529,19 +536,27 @@ input[type="checkbox"]:focus {
     margin: 0;
 }
 
+.productDetails--footer {
+    height: 66px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 /* checkout */
 
 .checkout-wrapper {
+    position: relative;
+    box-shadow: 0px 0px 3px 1px #c5afaf;
     max-width: 600px;
-    border: 1px solid red;
     margin: auto;
-    padding-left: 5px;
-    padding-right: 5px;
 }
 
 .checkout-wrapper .checkout-coffee-wrapper {
     width: 100%;
     font-size: 1em;
+    box-shadow: 0px 1px 3px 0px #a39c9c;
+    margin-bottom: 15px;
 }
 
 .checkout--edit {
@@ -572,12 +587,20 @@ input[type="checkbox"]:focus {
     margin: 0;
 }
 
-.checkout-sections>* {
-    border: 1px solid purple;
+.checkout-sections {
+    padding: 0 5px;
+}
+
+.checkout-sections a {
+    text-decoration: none;
+    color: black;
+}
+
+.checkout-sections>*,
+.payment-methods>div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
 }
 
 .checkout-sections>* p {
@@ -585,8 +608,10 @@ input[type="checkbox"]:focus {
     margin: 5px 0;
 }
 
-.checkout-time label {
-    width: 95%;
+.checkout--time,
+.payment-methods,
+:where(label) {
+    width: 100%;
 }
 
 .checkout--payment-summary {
@@ -604,12 +629,63 @@ input[type="checkbox"]:focus {
     margin: 0;
 }
 
-.productDetails--footer {
-    height: 66px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* payment page */
+.payment-methods {
+    padding: 0 5px;
 }
+
+.paymentMethod--icon-and-text {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.paymentMethod--icon {
+    width: 48px;
+    height: 48px;
+}
+
+.paymentMethod--banks {
+    position: relative;
+}
+
+.paymentMethod--availableBanks {
+    position: absolute;
+    width: 97%;
+    top: 130%;
+    left: 10px;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: .3s linear;
+}
+
+.paymentMethod--availableBanks.showBanks {
+    transform: scaleY(1);
+}
+
+.paymentMethod--availableBanks>div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 5px 0;
+    width: 100%;
+}
+
+
+
+.selected-paymentMethod {
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+}
+
+.voucher {
+    width: 100%;
+    align-items: center;
+    border-bottom: 1px solid black;
+    font-size: 1em !important;
+}
+
 
 ::-webkit-scrollbar {
     width: 10px;

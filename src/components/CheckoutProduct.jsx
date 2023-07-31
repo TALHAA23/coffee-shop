@@ -1,5 +1,4 @@
-export default function CheckoutProduct() {
-  // same as Product just few classes for different style
+export default function CheckoutProduct(props) {
   return (
     <div className="checkout-coffee-wrapper coffee-wrapper">
       <div className="coffee-Img-and-rating">
@@ -19,14 +18,18 @@ export default function CheckoutProduct() {
       </div>
 
       <div className="coffee-price">
-        <p className="coffee-price--current">23.32</p>
-        <small>x1</small>
+        <p className="coffee-price--current">${props.cost}</p>
+        <small>x{props.counter}</small>
         <div className="checkout--trash-and-counter">
           <img src="/icons/trash.svg" />
           <div className="counter checkout--counter">
-            <div className="counter--button">-</div>
-            <div className="counter--display">23</div>
-            <div className="counter--button">+</div>
+            <div className="counter--button" onClick={props.decreCount}>
+              -
+            </div>
+            <div className="counter--display">{props.counter}</div>
+            <div className="counter--button" onClick={props.increCount}>
+              +
+            </div>
           </div>
         </div>
       </div>
