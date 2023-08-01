@@ -51,27 +51,26 @@ export async function loginUser({
     return {
         message: 'user exists'
     }
-
 }
 
 export async function getProducts(productOrigin) {
     await sleep();
-    console.log(productOrigin)
-    const data = [{
-        title: "some title",
-        price: {
-            originalPrice: 23,
-            salePrice: 10
-        },
-        imgUrl: '/coffee-images/caffe-mocha.png',
-        origin: 'non-coffee',
-        rating: 3.4,
-        desc: 'this is a long desc that your are reading right know'
-    }];
-    if (data.origin != productOrigin) return [];
-    return data;
+    // console.log(productOrigin)
+    // const data = [{
+    //     title: "some title",
+    //     price: {
+    //         originalPrice: 23,
+    //         salePrice: 10
+    //     },
+    //     imgUrl: '/coffee-images/caffe-mocha.png',
+    //     origin: 'non-coffee',
+    //     rating: 3.4,
+    //     desc: 'this is a long desc that your are reading right know'
+    // }];
+    // if (data.origin != productOrigin) return [];
+    // return data;
 
-    // const data = [];
+    const data = [];
 
     try {
         await getDocs(productsCollection).then((querySnapshot) => {
@@ -92,17 +91,17 @@ export async function getProducts(productOrigin) {
 
 export async function getProductById(id) {
     await sleep();
-    return {
-        title: "some title",
-        price: {
-            originalPrice: 23,
-            salePrice: 10
-        },
-        imgUrl: '/coffee-images/caffe-mocha.png',
-        origin: 'non-coffee',
-        rating: 3.4,
-        desc: 'this is a long desc that your are reading right know'
-    };
+    // return {
+    //     title: "some title",
+    //     price: {
+    //         originalPrice: 23,
+    //         salePrice: 10
+    //     },
+    //     imgUrl: '/coffee-images/caffe-mocha.png',
+    //     origin: 'non-coffee',
+    //     rating: 3.4,
+    //     desc: 'this is a long desc that your are reading right know'
+    // };
     const docRef = doc(productsCollection, id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists())
@@ -129,4 +128,20 @@ export async function getOrderById(id) {
     if (docSnap.exists())
         return docSnap.data();
     else throw new Error("Order Doesn't exist")
+}
+
+export async function getCheckoutsById(id) {
+    const checkoutQuery = query(ordersCollection, where("id", "==", id));
+    const querySnapshot = await getDocs(checkoutQuery);
+    const checkouts = [];
+
+    querySnapshot.forEach(snapShot => {
+        checkouts.push(snapShot.data())
+    })
+
+
+    if (querySnapshot.empty)
+        throw new Error('No Checkout exist on the Id!')
+
+    return checkouts
 }

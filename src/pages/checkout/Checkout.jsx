@@ -8,44 +8,43 @@ import {
 import CheckoutProduct from "../../components/CheckoutProduct";
 import { useEffect, useState } from "react";
 import { TimePicker } from "react-ios-time-picker";
-import { getOrderById } from "../../utils";
+import { getCheckoutsById } from "../../utils";
 
 export function action() {}
 export async function loader() {
-  // const orderDetailsPromise = await getOrderById("1c4FfFztv3mDjbCp8cbP");
-  return null;
+  const checkouts = await getCheckoutsById("11111");
+  return checkouts;
 }
 
 export default function Checkout() {
-  // const orderInfo = useLoaderData();
-
-  const PERITEMCOST = 20;
-  const [counter, setCounter] = useState(
-    parseInt(localStorage.getItem("itemCount")) || 2
-  );
-  const [currentCost, setCurrentCost] = useState(PERITEMCOST * counter);
+  const checkouts = useLoaderData();
+  const [currentCost, setCurrentCost] = useState(0);
+  const [itemCounter, setItemCounter] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [pickupTime, setPickupTime] = useState();
   const { state } = useLocation();
   const discount = state?.discount || null;
-  const discountUpto = state?.upto.toFixed(2);
-  const discountAmount = ((discount / 100) * PERITEMCOST * counter).toFixed(2);
+  const discountUpto = state?.upto?.toFixed(2);
+  const discountAmount = (discount / 100) * currentCost;
   const controlDiscount =
     discountAmount > discountUpto ? discountUpto : discountAmount;
+  const finalCost = currentCost - controlDiscount;
 
-  useEffect(() => {
-    localStorage.setItem("itemCount", counter);
-    setCurrentCost(PERITEMCOST * counter - controlDiscount);
-  }, [counter, discount]);
-
-  function incrementCount() {
-    setCounter((prevCount) => prevCount + 1);
-  }
-  function decrementCount() {
-    if (counter - 1 == 0) return;
-    setCounter((prevCount) => prevCount - 1);
-  }
+  const checkoutElements = checkouts.map((checkout) => {
+    useEffect(() => {
+      setItemCounter(
+        (prevItemCount) => prevItemCount + parseInt(checkout.quantity)
+      );
+    }, []);
+    return (
+      <CheckoutProduct
+        {...checkout}
+        changeCost={setCurrentCost}
+        changeItemCount={setItemCounter}
+      />
+    );
+  });
 
   function displayTimePicker() {
     setShowTimePicker((prevDisplay) => !prevDisplay);
@@ -65,12 +64,7 @@ export default function Checkout() {
           Checkout
         </div>
 
-        <CheckoutProduct
-          counter={counter}
-          cost={PERITEMCOST}
-          increCount={incrementCount}
-          decreCount={decrementCount}
-        />
+        {checkoutElements}
 
         <div className="checkout-sections">
           <h4 className="checkout-sections--headerText">
@@ -120,7 +114,7 @@ export default function Checkout() {
             to="vouchers"
             state={{
               ...state,
-              spending: PERITEMCOST * counter,
+              spending: currentCost,
               search: searchParams.toString(),
             }}
             className="checkout--voucher"
@@ -143,10 +137,10 @@ export default function Checkout() {
                 <div>
                   <p>price</p>
                   <small>
-                    ({counter} item{counter > 1 && "s"})
+                    ({itemCounter} item{itemCounter > 1 && "s"})
                   </small>
                 </div>
-                <p>${PERITEMCOST * counter}</p>
+                <p>${currentCost.toFixed(2)}</p>
               </div>
               {discount && (
                 <div className="paymentSummary--voucher">
@@ -155,8 +149,8 @@ export default function Checkout() {
                 </div>
               )}
               <div className="paymentSummary-total">
-                <h4>Total</h4>
-                <h4>${currentCost}</h4>
+                <h3>Total</h3>
+                <h3>${finalCost.toFixed(2)}</h3>
               </div>
             </div>
           </div>
@@ -165,7 +159,7 @@ export default function Checkout() {
         <div className="productDetails--footer">
           <div className="productDetails--footer--price">
             <small>Total</small>
-            <h3>${currentCost}</h3>
+            <h3>${finalCost.toFixed(2)}</h3>
           </div>
           <button className="button">Check out</button>
         </div>

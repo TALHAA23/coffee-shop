@@ -23,11 +23,17 @@ export function loader({ params }) {
 
 export async function action({ request }) {
   const formData = await request.formData();
+  const id = formData.get("id");
   const title = formData.get("title");
   const desc = formData.get("desc");
   const total = formData.get("total");
   const quantity = formData.get("quantity");
+  const imgSrc = formData.get("imgSrc");
+  const PERITEMCOST = formData.get("PERITEMCOST");
   const orderInfo = {
+    id,
+    PERITEMCOST,
+    imgSrc,
     title,
     desc,
     total,
@@ -273,6 +279,21 @@ export default function ProductDetails() {
           </div>
 
           <div className="hiddenInputs">
+            <input hidden readOnly type="text" name="id" value="11111" />
+            <input
+              hidden
+              readOnly
+              type="text"
+              name="imgSrc"
+              value={props.imgUrl}
+            />
+            <input
+              hidden
+              readOnly
+              type="number"
+              name="PERITEMCOST"
+              value={productPrice + totalToppingCost}
+            />
             <input
               hidden
               readOnly

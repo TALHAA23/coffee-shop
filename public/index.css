@@ -559,6 +559,10 @@ input[type="checkbox"]:focus {
     margin-bottom: 15px;
 }
 
+.checkout-coffee-wrapper img {
+    scale: 1;
+}
+
 .checkout--edit {
     display: flex;
     cursor: pointer;
