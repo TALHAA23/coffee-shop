@@ -7,6 +7,15 @@ body {
     margin: 0;
 }
 
+.loading-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 nav {
     width: 100%;
     height: 60px;
@@ -81,6 +90,10 @@ nav.active {
     color: white;
     animation: hidePopup 10s ease-out;
     animation-fill-mode: forwards;
+}
+
+.order-confirmation--popup:hover {
+    animation-play-state: paused;
 }
 
 @keyframes hidePopup {
@@ -240,7 +253,9 @@ main {
 }
 
 .coffeeImg {
-    scale: 1.2;
+    width: 57px;
+    height: 57px;
+    aspect-ratio: 1/1;
 }
 
 .coffeeImg--backgorund {
@@ -559,10 +574,6 @@ input[type="checkbox"]:focus {
     margin-bottom: 15px;
 }
 
-.checkout-coffee-wrapper img {
-    scale: 1;
-}
-
 .checkout--edit {
     display: flex;
     cursor: pointer;
@@ -690,6 +701,76 @@ input[type="checkbox"]:focus {
     font-size: 1em !important;
 }
 
+/* receipt */
+
+.receipt {
+    max-width: 500px;
+    padding: 5px 10px;
+    margin: auto;
+    margin-top: 90px;
+}
+
+.receipt--header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 37px;
+}
+
+.receipt--header--tick {
+    position: absolute;
+    top: -72px;
+}
+
+.receipt--about>div,
+.receipt--data>div {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.receipt .receipt--payment-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+}
+
+.receipt--payment-summary>div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2px 0;
+}
+
+/* track */
+.track {
+    margin-top: 72px;
+    padding: 10px 5px;
+}
+
+.track--take-order {
+    margin: 10px auto;
+    width: 70%;
+}
+
+.track--itemList>div {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+.track--progress {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.receipt--track-order {
+    margin: 20px auto
+}
 
 ::-webkit-scrollbar {
     width: 10px;
@@ -710,11 +791,6 @@ input[type="checkbox"]:focus {
 @media only screen and (min-width:750px) {
     .coffee-wrapper {
         font-size: 1.2em;
-    }
-
-
-    .coffee-Img-and-rating {
-        scale: 1.1;
     }
 }
 

@@ -4,26 +4,60 @@ import {
   useLoaderData,
   useLocation,
   useSearchParams,
+  defer,
+  Await,
+  redirect,
+  useNavigation,
 } from "react-router-dom";
+import { Suspense } from "react";
+import { useUser } from "../../hooks/UserProvider";
 import CheckoutProduct from "../../components/CheckoutProduct";
 import { useEffect, useState } from "react";
 import { TimePicker } from "react-ios-time-picker";
-import { getCheckoutsById } from "../../utils";
+import { getMyCheckouts } from "../../utils";
+import { saveReceipt } from "../../utils";
 
-export function action() {}
-export async function loader() {
-  const checkouts = await getCheckoutsById("11111");
-  return checkouts;
+export async function action({ request }) {
+  const formData = await request.formData();
+  const price = formData.get("price");
+  // const deliveryTime = formData.get("deliveryTime");
+  const estimate = formData.get("estimateTime");
+  const paymentMethod = formData.get("payment-method");
+  const voucher = formData.get("voucher");
+  const itemList = formData.get("itemList");
+  const total = formData.get("total");
+
+  const data = {
+    price,
+    // deliveryTime,
+    estimate,
+    paymentMethod,
+    voucher,
+    itemList,
+    total,
+  };
+  await new Promise((res) => setTimeout(res, 3000));
+
+  const orderNumber = await saveReceipt(data);
+  throw redirect(`/receipt/${orderNumber}`);
+}
+export function loader() {
+  const checkoutPromise = getMyCheckouts("11111");
+  return defer({ checkoutPromise });
 }
 
 export default function Checkout() {
-  const checkouts = useLoaderData();
+  const dataPromise = useLoaderData();
+  const { state } = useLocation();
+  const navigation = useNavigation();
   const [currentCost, setCurrentCost] = useState(0);
   const [itemCounter, setItemCounter] = useState(0);
+  const [itemList, setitemList] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [pickupTime, setPickupTime] = useState();
-  const { state } = useLocation();
+  const tenMinFromNow = new Date().setMinutes(new Date().getMinutes() + 10);
+  const [pickupTime, setPickupTime] = useState(tenMinFromNow);
+  const [deliveryEstimation, setDeliveryEstimation] = useState();
   const discount = state?.discount || null;
   const discountUpto = state?.upto?.toFixed(2);
   const discountAmount = (discount / 100) * currentCost;
@@ -31,20 +65,36 @@ export default function Checkout() {
     discountAmount > discountUpto ? discountUpto : discountAmount;
   const finalCost = currentCost - controlDiscount;
 
-  const checkoutElements = checkouts.map((checkout) => {
-    useEffect(() => {
-      setItemCounter(
-        (prevItemCount) => prevItemCount + parseInt(checkout.quantity)
+  useEffect(() => {
+    if (pickupTime == "later") setDeliveryEstimation(tenMinFromNow);
+    else setDeliveryEstimation(pickupTime);
+  }, [pickupTime]);
+
+  function renderCheckouts(checkouts) {
+    const checkoutElements = checkouts.map((checkout) => {
+      useEffect(() => {
+        setItemCounter(
+          (prevItemCount) => prevItemCount + parseInt(checkout.quantity)
+        );
+        setitemList((prevList) => [
+          ...prevList,
+          {
+            item: checkout.title,
+            desc: checkout.desc,
+            quantity: checkout.quantity,
+          },
+        ]);
+      }, []);
+      return (
+        <CheckoutProduct
+          {...checkout}
+          changeCost={setCurrentCost}
+          changeItemCount={setItemCounter}
+        />
       );
-    }, []);
-    return (
-      <CheckoutProduct
-        {...checkout}
-        changeCost={setCurrentCost}
-        changeItemCount={setItemCounter}
-      />
-    );
-  });
+    });
+    return checkoutElements;
+  }
 
   function displayTimePicker() {
     setShowTimePicker((prevDisplay) => !prevDisplay);
@@ -63,8 +113,9 @@ export default function Checkout() {
           </Link>
           Checkout
         </div>
-
-        {checkoutElements}
+        <Suspense fallback={<h1>Loading...</h1>}>
+          <Await resolve={dataPromise.checkoutPromise}>{renderCheckouts}</Await>
+        </Suspense>
 
         <div className="checkout-sections">
           <h4 className="checkout-sections--headerText">
@@ -78,7 +129,12 @@ export default function Checkout() {
               <p>As Soon as Possible</p>
               <small>Now - 10 Minutes</small>
             </label>
-            <input type="radio" id="asap" name="checkout-time" />
+            <input
+              type="radio"
+              id="asap"
+              name="checkout-time"
+              onClick={() => setPickupTime("later")}
+            />
           </div>
 
           <div className="checkout-time">
@@ -161,9 +217,60 @@ export default function Checkout() {
             <small>Total</small>
             <h3>${finalCost.toFixed(2)}</h3>
           </div>
-          <button className="button">Check out</button>
+          <button
+            disabled={itemList.length ? false : true}
+            className="button"
+            form="checkout-form"
+            type="submit"
+          >
+            Check out
+          </button>
         </div>
       </div>
+
+      {navigation.state == "submitting" && (
+        <p className="form--waiting order-form-state">Redirecting...</p>
+      )}
+
+      <Form id="checkout-form" method="post">
+        <input hidden readOnly type="number" name="price" value={currentCost} />
+        <input
+          hidden
+          readOnly
+          type="number"
+          name="voucher"
+          value={controlDiscount}
+        />
+        <input hidden readOnly type="number" name="total" value={finalCost} />
+        {/* <input
+          hidden
+          readOnly
+          type="text"
+          name="deliveryTime"
+          value={pickupTime}
+        /> */}
+        <input
+          hidden
+          readOnly
+          type="text"
+          name="payment-method"
+          value={state?.payment || "COD"}
+        />
+        <input
+          hidden
+          readOnly
+          type="text"
+          name="itemList"
+          value={JSON.stringify(itemList)}
+        />
+        <input
+          hidden
+          readOnly
+          type="text"
+          name="estimateTime"
+          value={deliveryEstimation}
+        />
+      </Form>
     </>
   );
 }

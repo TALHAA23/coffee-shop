@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
 export default function Product(props) {
   const [searchParams, setSearchParams] = useSearchParams();
+
   return (
     <Link
       to={props.id}

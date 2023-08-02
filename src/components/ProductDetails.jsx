@@ -14,6 +14,7 @@ import { getProductById } from "../utils";
 import { Suspense, useEffect, useState } from "react";
 import { TOPPING } from "../pages/Constants";
 import { saveOrder } from "../utils";
+import { useUser } from "../hooks/UserProvider";
 
 export function loader({ params }) {
   const productId = params.id;
@@ -23,7 +24,7 @@ export function loader({ params }) {
 
 export async function action({ request }) {
   const formData = await request.formData();
-  const id = formData.get("id");
+  // const id = formData.get("id");
   const title = formData.get("title");
   const desc = formData.get("desc");
   const total = formData.get("total");
@@ -31,7 +32,8 @@ export async function action({ request }) {
   const imgSrc = formData.get("imgSrc");
   const PERITEMCOST = formData.get("PERITEMCOST");
   const orderInfo = {
-    id,
+    // id,
+    auth: useUser(),
     PERITEMCOST,
     imgSrc,
     title,
@@ -279,7 +281,7 @@ export default function ProductDetails() {
           </div>
 
           <div className="hiddenInputs">
-            <input hidden readOnly type="text" name="id" value="11111" />
+            {/* <input hidden readOnly type="text" name="id" value="11111" /> */}
             <input
               hidden
               readOnly

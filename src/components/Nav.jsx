@@ -16,6 +16,12 @@ export default function Nav() {
         History
       </NavLink>
       <NavLink
+        to="checkout"
+        style={({ isActive }) => (isActive ? activeLink : null)}
+      >
+        Cart
+      </NavLink>
+      <NavLink
         to="account"
         style={({ isActive }) => (isActive ? activeLink : null)}
       >

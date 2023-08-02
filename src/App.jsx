@@ -5,6 +5,8 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import UserProvider from "./hooks/UserProvider";
+
 import Error from "./components/Error";
 
 import BoradingSlide1 from "./pages/onboarding/BoardingSlide1";
@@ -33,6 +35,8 @@ import Checkout, {
 } from "./pages/checkout/Checkout";
 import PaymentMethod from "./pages/checkout/PaymentMethod";
 import Vouchers from "./pages/checkout/Vouchers";
+import Receipt, { loader as receiptLoader } from "./pages/Receipt/Receipt";
+import Track from "./pages/Receipt/Track";
 
 export default function App() {
   const routes = createBrowserRouter(
@@ -102,6 +106,13 @@ export default function App() {
           <Route path="payment-method" element={<PaymentMethod />} />
           <Route path="vouchers" element={<Vouchers />} />
         </Route>
+
+        <Route
+          path="/receipt/:id"
+          element={<Receipt />}
+          loader={receiptLoader}
+        />
+        <Route path="/receipt/:id/track" element={<Track />} />
       </>
     )
   );

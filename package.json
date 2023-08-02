@@ -12,9 +12,11 @@
   "dependencies": {
     "firebase": "^10.1.0",
     "react": "^18.2.0",
+    "react-customizable-progressbar": "^1.2.0",
     "react-dom": "^18.2.0",
     "react-ios-time-picker": "^0.2.2",
-    "react-router-dom": "^6.14.2"
+    "react-router-dom": "^6.14.2",
+    "react-spinners-kit": "^1.9.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

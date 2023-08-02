@@ -3,8 +3,11 @@ import {
   Link,
   redirect,
   useActionData,
+  useNavigate,
   useNavigation,
 } from "react-router-dom";
+
+import { useUpdateUser } from "../../hooks/UserProvider";
 import { loginUser } from "../../utils";
 
 export async function action({ request }) {
@@ -17,7 +20,7 @@ export async function action({ request }) {
 
   try {
     await loginUser({ email, password });
-    throw redirect("/");
+    return email;
   } catch (err) {
     return err;
   }
@@ -26,6 +29,13 @@ export async function action({ request }) {
 export default function Login() {
   const navigation = useNavigation();
   const actionResponse = useActionData();
+  const navigate = useNavigate();
+
+  if (actionResponse && !(actionResponse instanceof Error)) {
+    const userSetter = useUpdateUser();
+    userSetter(actionResponse);
+    navigate("/");
+  }
 
   return (
     <div className="form-wrapper">

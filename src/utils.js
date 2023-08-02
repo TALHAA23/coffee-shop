@@ -5,6 +5,7 @@ import {
     usersCollection,
     productsCollection,
     ordersCollection,
+    receiptsCollection,
     db
 } from "./firebase";
 
@@ -14,7 +15,7 @@ import {
     where,
     getDocs,
     getDoc,
-    doc
+    doc,
 } from "firebase/firestore";
 
 function sleep() {
@@ -130,7 +131,7 @@ export async function getOrderById(id) {
     else throw new Error("Order Doesn't exist")
 }
 
-export async function getCheckoutsById(id) {
+export async function getMyCheckouts(id) {
     const checkoutQuery = query(ordersCollection, where("id", "==", id));
     const querySnapshot = await getDocs(checkoutQuery);
     const checkouts = [];
@@ -144,4 +145,28 @@ export async function getCheckoutsById(id) {
         throw new Error('No Checkout exist on the Id!')
 
     return checkouts
+}
+
+export async function saveReceipt(creds) {
+    try {
+        const receiptRef = await addDoc(receiptsCollection, creds);
+        return receiptRef.id
+    } catch (err) {
+        throw err
+    }
+}
+
+export async function getReceiptById(id) {
+    // await sleep();
+    const docRef = doc(receiptsCollection, id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists())
+        return {
+            id: docSnap.id,
+            ...docSnap.data()
+        };
+    else
+        throw new Error('Receipt Not Found');
+
 }
