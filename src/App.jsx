@@ -38,6 +38,14 @@ import Vouchers from "./pages/checkout/Vouchers";
 import Receipt, { loader as receiptLoader } from "./pages/Receipt/Receipt";
 import Track from "./pages/Receipt/Track";
 
+import HistoryLayout, {
+  loader as historyLayoutLoader,
+} from "./pages/history/HistoryLayout";
+import Process, { loader as processLoader } from "./pages/history/Process";
+import Done, { loader as doneLoader } from "./pages/history/Done";
+
+import Review, { action as reviewAction } from "./pages/review/Review";
+
 export default function App() {
   const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -113,9 +121,23 @@ export default function App() {
           loader={receiptLoader}
         />
         <Route path="/receipt/:id/track" element={<Track />} />
+
+        <Route
+          path="/history"
+          element={<HistoryLayout />}
+          loader={historyLayoutLoader}
+        >
+          <Route index element={<Process />} loader={processLoader} />
+          <Route path="done" element={<Done />} loader={doneLoader} />
+        </Route>
+        <Route path="/review" element={<Review />} action={reviewAction} />
       </>
     )
   );
 
-  return <RouterProvider router={routes} />;
+  return (
+    <UserProvider>
+      <RouterProvider router={routes} />{" "}
+    </UserProvider>
+  );
 }

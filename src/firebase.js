@@ -6,9 +6,15 @@ import {
     getAnalytics
 } from "firebase/analytics";
 import {
+    getAuth
+} from "firebase/auth";
+import {
     getFirestore,
-    collection
+    collection,
+    writeBatch
 } from "firebase/firestore"
+
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyBx_3CwFDhHGzc3QcbrzPkV3CnC_MFSczE",
@@ -23,7 +29,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const db = getFirestore(app);
+export const batch = writeBatch(db);
 export const usersCollection = collection(db, "users");
 export const productsCollection = collection(db, "products");
 export const ordersCollection = collection(db, "orders");
 export const receiptsCollection = collection(db, "receipts");
+export const reviewsCollection = collection(db, "reviews");
+export const auth = getAuth()

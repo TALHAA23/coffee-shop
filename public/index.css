@@ -763,14 +763,148 @@ input[type="checkbox"]:focus {
 }
 
 .track--progress {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 7cm;
+}
+
+.progress-bar {
+    position: absolute !important;
+    z-index: -1;
+}
+
+.track--progress--text {
+    width: 5cm;
+    text-align: center;
 }
 
 .receipt--track-order {
     margin: 20px auto
 }
+
+/* history */
+.history {
+    margin-top: 70px;
+    padding: 5px 5px;
+}
+
+.history--layout {
+    display: flex;
+    justify-content: space-around;
+}
+
+.history--layout a {
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    width: calc(100%/2);
+}
+
+.history-coffee-container {
+    position: relative;
+    width: 100%;
+    font-size: 1em !important;
+}
+
+.history--coffee--link {
+    position: absolute;
+    bottom: 7px;
+    right: 0;
+    text-align: none;
+    color: #5D4037;
+    font-size: .9em;
+}
+
+/* status */
+.status {
+    background-color: #f5f5ff;
+    border: 2px solid rgba(80, 42, 42, 0.599);
+    max-width: 70px;
+    width: auto;
+    border-radius: 7px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status.status-success {
+    color: #0f8710;
+    border-color: #c3e0d4;
+}
+
+.status.status-pending {
+    color: #EB9525;
+    background-color: #FFF9F2;
+    max-width: 140px;
+}
+
+/* reviews */
+.review {
+    margin-top: 70px;
+    padding: 20px 5px;
+}
+
+.review--header {
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.review small {
+    font-weight: bold;
+}
+
+.review--rating,
+.review--written {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review--rating--stars {
+    display: flex;
+    align-items: center;
+    align-self: center;
+}
+
+.rating--face {
+    scale: .9;
+}
+
+.rating--stars>img {
+    margin: 0 5px;
+}
+
+.review-written-box {
+    resize: none;
+    align-self: center;
+    width: 95%;
+    font-family: 'outfit';
+    min-height: 103px;
+    border-radius: 16px;
+    padding: 5px;
+}
+
+.review--written-warning {
+    font-size: .7em;
+    color: rgb(110, 110, 110);
+}
+
+.review--send {
+    width: 80%;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.review .form--waiting {
+    top: 0;
+    right: 5px;
+}
+
 
 ::-webkit-scrollbar {
     width: 10px;

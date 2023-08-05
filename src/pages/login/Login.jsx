@@ -3,12 +3,10 @@ import {
   Link,
   redirect,
   useActionData,
-  useNavigate,
   useNavigation,
 } from "react-router-dom";
 
-import { useUpdateUser } from "../../hooks/UserProvider";
-import { loginUser } from "../../utils";
+import { signInUser } from "../../auth";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -19,8 +17,8 @@ export async function action({ request }) {
     return new Error("Complete all the sections");
 
   try {
-    await loginUser({ email, password });
-    return email;
+    await signInUser({ email, password });
+    return redirect("/");
   } catch (err) {
     return err;
   }
@@ -29,13 +27,6 @@ export async function action({ request }) {
 export default function Login() {
   const navigation = useNavigation();
   const actionResponse = useActionData();
-  const navigate = useNavigate();
-
-  if (actionResponse && !(actionResponse instanceof Error)) {
-    const userSetter = useUpdateUser();
-    userSetter(actionResponse);
-    navigate("/");
-  }
 
   return (
     <div className="form-wrapper">

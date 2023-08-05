@@ -40,9 +40,10 @@ export async function action({ request }) {
 
   const orderNumber = await saveReceipt(data);
   throw redirect(`/receipt/${orderNumber}`);
+  return null;
 }
 export function loader() {
-  const checkoutPromise = getMyCheckouts("11111");
+  const checkoutPromise = getMyCheckouts("33333");
   return defer({ checkoutPromise });
 }
 
@@ -79,9 +80,12 @@ export default function Checkout() {
         setitemList((prevList) => [
           ...prevList,
           {
+            productId: checkout.productId,
             item: checkout.title,
             desc: checkout.desc,
             quantity: checkout.quantity,
+            img: checkout.imgSrc,
+            price: checkout.PERITEMCOST,
           },
         ]);
       }, []);
@@ -100,8 +104,12 @@ export default function Checkout() {
     setShowTimePicker((prevDisplay) => !prevDisplay);
   }
 
-  function changePickupTime(event) {
-    setPickupTime(event.target.value);
+  function schedulePickup(value) {
+    console.log(value);
+    const [hr, mint] = value.split(":");
+    let time = new Date(new Date().setHours(hr));
+    time = time.setMinutes(mint);
+    setPickupTime(time);
   }
 
   return (
@@ -140,12 +148,14 @@ export default function Checkout() {
           <div className="checkout-time">
             <label htmlFor="later" onClick={displayTimePicker}>
               <p>Later</p>
-              <small>{pickupTime || "Schedule Pick Up"}</small>
+              <small>
+                {new Date(parseInt(pickupTime)).toLocaleTimeString()}
+              </small>
             </label>
             {showTimePicker && (
               <TimePicker
                 pickerDefaultValue={`${new Date().getHours()}:${new Date().getMinutes()}`}
-                onChange={(value) => setPickupTime(value)}
+                onChange={(value) => schedulePickup(value)}
                 onSave={() => setShowTimePicker(false)}
               />
             )}

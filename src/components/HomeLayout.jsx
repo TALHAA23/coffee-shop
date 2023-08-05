@@ -11,10 +11,11 @@ import Nav from "./Nav";
 import Promo from "./Promo";
 import Filters from "./Filters";
 import { getOrderById } from "../utils";
+import { getSignedInUser } from "../auth";
 
-export function loader({ request }) {
+export async function loader({ request }) {
+  if (!localStorage.getItem("userAuth")) await getSignedInUser();
   const orderNumber = localStorage.getItem("orderNumber");
-  // const orderNumber = new URL(request.url).searchParams.get("ordernumber");
   const orderinfoPromise = getOrderById(orderNumber);
   return defer({ orderinfoPromise });
 }

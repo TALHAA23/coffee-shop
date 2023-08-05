@@ -24,7 +24,9 @@ export function loader({ params }) {
 
 export async function action({ request }) {
   const formData = await request.formData();
-  // const id = formData.get("id");
+  const pathname = new URL(request.url).pathname.split("/");
+  const productId = pathname[pathname.length - 1];
+  const id = formData.get("id");
   const title = formData.get("title");
   const desc = formData.get("desc");
   const total = formData.get("total");
@@ -32,8 +34,8 @@ export async function action({ request }) {
   const imgSrc = formData.get("imgSrc");
   const PERITEMCOST = formData.get("PERITEMCOST");
   const orderInfo = {
-    // id,
-    auth: useUser(),
+    id,
+    productId,
     PERITEMCOST,
     imgSrc,
     title,
@@ -42,19 +44,19 @@ export async function action({ request }) {
     quantity,
   };
 
-  try {
-    const orderNumber = await saveOrder(orderInfo).then((res) => res);
-    localStorage.setItem("orderNumber", orderNumber);
-    throw redirect("/");
-  } catch (err) {
-    return err;
-  }
+  // try {
+  //   const orderNumber = await saveOrder(orderInfo).then((res) => res);
+  //   localStorage.setItem("orderNumber", orderNumber);
+  //   throw redirect("/");
+  // } catch (err) {
+  //   return err;
+  // }
+  return null;
 }
 
 export default function ProductDetails() {
   const actionResponse = useActionData();
   const { state } = useLocation();
-
   const navigation = useNavigation();
   const dataPromise = useLoaderData();
   const [counter, setCounter] = useState(1);
@@ -281,7 +283,7 @@ export default function ProductDetails() {
           </div>
 
           <div className="hiddenInputs">
-            {/* <input hidden readOnly type="text" name="id" value="11111" /> */}
+            <input hidden readOnly type="text" name="id" value="22222" />
             <input
               hidden
               readOnly

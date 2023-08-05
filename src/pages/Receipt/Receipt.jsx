@@ -39,7 +39,7 @@ export default function Receipt() {
     return (
       <div className="checkout-wrapper">
         <div className="productDetails--header">
-          <Link to=".." relative="path">
+          <Link to="/" relative="path">
             <img src="/icons/arrow-left.svg" />
           </Link>
           Receipt Order
@@ -90,24 +90,16 @@ export default function Receipt() {
                 <h4>Payment Method</h4>
                 <p>{receiptData.paymentMethod}</p>
               </div>
-              {receiptData.estimate.length > 7 ? (
-                <div>
-                  <h4>
-                    {" "}
-                    Pick Up <small>(estimate)</small>{" "}
-                  </h4>
-                  <p>
-                    {new Date(
-                      parseInt(receiptData.estimate)
-                    ).toLocaleTimeString()}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <h4> schedule Pick Up</h4>
-                  <p>{receiptData.estimate}</p>
-                </div>
-              )}
+              <div>
+                <h4>
+                  Pick Up <small>(estimate)</small>
+                </h4>
+                <p>
+                  {new Date(
+                    parseInt(receiptData.estimate)
+                  ).toLocaleTimeString()}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -115,7 +107,11 @@ export default function Receipt() {
           className="button receipt--track-order"
           onClick={() =>
             navigate("track", {
-              state: { itemList, estimate: receiptData.estimate },
+              state: {
+                itemList,
+                estimate: receiptData.estimate,
+                receiptId: receiptData.id,
+              },
             })
           }
         >

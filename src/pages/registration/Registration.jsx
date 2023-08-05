@@ -1,5 +1,6 @@
 import { Form, Link, useActionData, useNavigation } from "react-router-dom";
-import { registerUser } from "../../utils";
+// import { registerUser } from "../../utils";
+import { registerUser } from "../../auth";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -10,9 +11,18 @@ export async function action({ request }) {
   if (email == "" || name == "" || password == "")
     return new Error("Complete all the sections");
 
-  return registerUser({ name, email, password })
-    .then((res) => res)
-    .catch((err) => err);
+  try {
+    await registerUser({ email, password });
+    return redirect("/login");
+  } catch (err) {
+    return err;
+  }
+
+  return null;
+
+  // return registerUser({ name, email, password })
+  //   .then((res) => res)
+  //   .catch((err) => err);
 }
 
 export default function Registration() {
