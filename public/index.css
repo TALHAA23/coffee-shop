@@ -813,6 +813,7 @@ input[type="checkbox"]:focus {
 .track--itemList>div {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin: 5px 0;
 }
 
