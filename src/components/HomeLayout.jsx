@@ -10,21 +10,22 @@ import { Suspense } from "react";
 import Nav from "./Nav";
 import Promo from "./Promo";
 import Filters from "./Filters";
-import { getOrderById } from "../utils";
+import { getProducts, getOrderById } from "../utils";
 import { getSignedInUser } from "../auth";
 
-export async function loader({ request }) {
-  if (!localStorage.getItem("userAuth")) await getSignedInUser();
+import FiltersProvider from "../hooks/FiltersProvider";
+
+export async function loader() {
   const orderNumber = localStorage.getItem("orderNumber");
   const orderinfoPromise = getOrderById(orderNumber);
-  return defer({ orderinfoPromise });
+  const coffeePromise = getProducts();
+  return defer({ orderinfoPromise, coffeePromise });
 }
 
 export default function HomeLayout() {
   const [searchParams, setSearchParams] = useSearchParams();
   const restoreParams = searchParams.toString();
   const dataPromise = useLoaderData();
-
   function popOrderConfirmation(orderInfo) {
     if (!orderInfo) return null;
     localStorage.removeItem("orderNumber");
@@ -84,11 +85,11 @@ export default function HomeLayout() {
             <div className="layout-nav--underline--solid layout-nav--underline--light"></div>
           </NavLink>
         </div>
-
-        <Filters />
       </header>
       <main>
-        <Outlet />
+        <FiltersProvider>
+          <Outlet context={dataPromise.coffeePromise} />
+        </FiltersProvider>
       </main>
     </>
   );

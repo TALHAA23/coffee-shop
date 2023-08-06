@@ -1,5 +1,10 @@
-import { Form, Link, useActionData, useNavigation } from "react-router-dom";
-// import { registerUser } from "../../utils";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigation,
+  redirect,
+} from "react-router-dom";
 import { registerUser } from "../../auth";
 
 export async function action({ request }) {

@@ -40,7 +40,10 @@ export default function Process() {
       {items.length ? (
         <div>{containers}</div>
       ) : (
-        <h1>No Product under Process</h1>
+        <div className="notfound--wrapper history-coffee-container--no-process">
+          <h1>Nothing in Process</h1>
+          <img src="/gifs/coffee-glass.gif" alt="" />
+        </div>
       )}
     </>
   );

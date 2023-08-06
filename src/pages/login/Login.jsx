@@ -9,6 +9,8 @@ import {
 import { signInUser } from "../../auth";
 
 export async function action({ request }) {
+  const redirectPathname = new URL(request.url).searchParams.get("redirect");
+  console.log(`${redirectPathname ? redirectPathname : ""}`);
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
@@ -18,7 +20,7 @@ export async function action({ request }) {
 
   try {
     await signInUser({ email, password });
-    return redirect("/");
+    return redirect(redirectPathname ? redirectPathname : "/");
   } catch (err) {
     return err;
   }

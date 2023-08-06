@@ -199,6 +199,37 @@ body {
     text-decoration: none;
 }
 
+.sign-in-warning {
+    position: absolute;
+    top: 60px;
+    z-index: 1;
+    padding: 10px 20px;
+    background-color: rgb(132, 9, 9);
+    left: 2%;
+    transform: translateX(-50);
+    animation: beat 1s ease-out infinite alternate-reverse;
+}
+
+.sign-in-warning>a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.sign-in-warning:hover {
+    scale: 1;
+}
+
+@keyframes beat {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(.9);
+    }
+}
+
 @media only screen and (max-width:400px) {
     .registration {
         box-shadow: none;

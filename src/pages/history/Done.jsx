@@ -5,10 +5,13 @@ import {
   useOutletContext,
   Await,
 } from "react-router-dom";
+import { nanoid } from "nanoid";
 import { Suspense } from "react";
-import { getAllReviewsTo } from "../../utils";
+import { getAllReviews } from "../../utils";
+import { Loading } from "../../components/LoadingComponent";
 export async function loader() {
-  return defer({ reviewsPromise: getAllReviewsTo() });
+  localStorage.removeItem("reviewOrigin");
+  return defer({ reviewsPromise: getAllReviews() });
 }
 
 export default function Done() {
@@ -18,13 +21,15 @@ export default function Done() {
   function renderDones(reviews) {
     return items.map((item) => {
       const itemList = JSON.parse(item.itemList);
-      console.log(reviews);
       return itemList.map((listItem) => {
         const reviewDone = reviews.find(
           (review) => review.from == item.id && review.to == listItem.productId
         );
         return (
-          <div className="coffee-wrapper history-coffee-container">
+          <div
+            key={nanoid()}
+            className="coffee-wrapper history-coffee-container"
+          >
             <div className="coffee-Img-and-rating">
               <div className="coffeeImg--backgorund"></div>
               <img className="coffeeImg" src={listItem.img} />
@@ -47,6 +52,15 @@ export default function Done() {
               <small>x{listItem.quantity}</small>
             </div>
             <Link
+              onClick={() =>
+                localStorage.setItem(
+                  "reviewOrigin",
+                  JSON.stringify({
+                    receiptId: item.id,
+                    productId: listItem.productId,
+                  })
+                )
+              }
               to="/review"
               state={{ receiptId: item.id, productId: listItem.productId }}
               className="history--coffee--link"
@@ -62,11 +76,14 @@ export default function Done() {
   return (
     <>
       {items.length ? (
-        <Suspense fallback="loading...">
+        <Suspense fallback={<Loading />}>
           <Await resolve={dataPromise.reviewsPromise}>{renderDones}</Await>
         </Suspense>
       ) : (
-        <h1>No Product</h1>
+        <div className="notfound--wrapper history-coffee-container--no-process">
+          <h1>Make some order's first :0</h1>
+          <img src="/gifs/coffee-glass.gif" alt="" />
+        </div>
       )}
     </>
   );

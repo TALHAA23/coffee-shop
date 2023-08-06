@@ -1,31 +1,44 @@
 import { NavLink } from "react-router-dom";
+import { useUserUid } from "../hooks/UserProvider";
+import { signOutUser } from "../auth";
 export default function Nav() {
-  const activeLink = {
-    fontWeight: "bold",
-    textDecoration: "underline",
-  };
+  const { userUid } = useUserUid();
+
+  function handleSignOut() {
+    if (userUid) signOutUser();
+  }
+
   return (
     <nav>
-      <NavLink to="/" style={({ isActive }) => (isActive ? activeLink : null)}>
+      <NavLink to="/" style={{ fontWeight: "b" }}>
         Home
       </NavLink>
       <NavLink
-        to="history"
-        style={({ isActive }) => (isActive ? activeLink : null)}
+        to={{
+          pathname: "/history",
+          search: userUid ? `?auth=${userUid}` : "",
+        }}
       >
         History
       </NavLink>
       <NavLink
-        to="checkout"
-        style={({ isActive }) => (isActive ? activeLink : null)}
+        to={{
+          pathname: "/checkout",
+          search: userUid ? `?auth=${userUid}` : "",
+        }}
       >
         Cart
       </NavLink>
       <NavLink
-        to="account"
-        style={({ isActive }) => (isActive ? activeLink : null)}
+        to={userUid ? "#" : "/login"}
+        onClick={handleSignOut}
+        title={useUserUid ? "sign out" : "sign in"}
       >
-        Account
+        <img
+          style={{ scale: "0.8" }}
+          src={`/other-images/user-${userUid ? "minus" : "plus"}-white.png`}
+          alt=""
+        />
       </NavLink>
     </nav>
   );

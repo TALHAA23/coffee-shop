@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useUserUid } from "../../hooks/UserProvider";
 export default function PaymentMethod() {
+  const { userUid } = useUserUid();
   const [showBanks, setShowBanks] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const { state } = useLocation();
@@ -16,7 +18,9 @@ export default function PaymentMethod() {
   }
 
   function backToCheckout() {
-    navigate("..", { state: { ...state, payment: paymentMethod } });
+    navigate(`..?auth=${userUid}`, {
+      state: { ...state, payment: paymentMethod },
+    });
   }
 
   return (

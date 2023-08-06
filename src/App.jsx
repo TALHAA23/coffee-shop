@@ -5,9 +5,10 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import UserProvider from "./hooks/UserProvider";
+import { UserEmailProvider } from "./hooks/UserProvider";
 
-import Error from "./components/Error";
+import Error, { NoCheckoutError } from "./components/Error";
+import NotFound from "./pages/notFound/NotFound";
 
 import BoradingSlide1 from "./pages/onboarding/BoardingSlide1";
 import BoradingSlide2 from "./pages/onboarding/BoardingSlide2";
@@ -50,94 +51,85 @@ export default function App() {
   const routes = createBrowserRouter(
     createRoutesFromElements(
       <>
-        <Route path="/">
-          <Route path="onboarding" element={<BoardingLayout />}>
-            <Route index element={<BoradingSlide1 />} />
-            <Route path="2" element={<BoradingSlide2 />} />
-            <Route path="3" element={<BoradingSlide3 />} />
-          </Route>
-
-          <Route
-            path="registration"
-            element={<Registration />}
-            action={registrationAction}
-          />
-          <Route path="login" element={<Login />} action={loginAction} />
+        <Route path="/onboarding" element={<BoardingLayout />}>
+          <Route index element={<BoradingSlide1 />} />
+          <Route path="2" element={<BoradingSlide2 />} />
+          <Route path="3" element={<BoradingSlide3 />} />
         </Route>
 
+        <Route
+          path="/registration"
+          element={<Registration />}
+          action={registrationAction}
+        />
+        <Route path="/login" element={<Login />} action={loginAction} />
+
         <Route path="/" element={<HomeLayout />} loader={homeLayoutLoader}>
-          <Route
-            index
-            element={<Coffee />}
-            loader={coffeeLoader}
-            errorElement={<Error />}
-          />
+          <Route index element={<Coffee />} errorElement={<Error />} />
           <Route
             path="non-coffee"
             element={<Coffee />}
-            loader={coffeeLoader}
             errorElement={<Error />}
           />
+          <Route path="pastry" element={<Coffee />} errorElement={<Error />} />
+        </Route>
+        <Route path="/" errorElement={<Error />}>
           <Route
-            path="pastry"
-            element={<Coffee />}
-            loader={coffeeLoader}
-            errorElement={<Error />}
+            path=":id"
+            element={<ProductDetails />}
+            loader={productDetailsLoader}
+            action={productDetailsAction}
           />
-        </Route>
-        <Route
-          path="/:id"
-          element={<ProductDetails />}
-          loader={productDetailsLoader}
-          action={productDetailsAction}
-        />
-        <Route
-          path="/non-coffee/:id"
-          element={<ProductDetails />}
-          loader={productDetailsLoader}
-          action={productDetailsAction}
-        />
-        <Route
-          path="/pastry/:id"
-          element={<ProductDetails />}
-          loader={productDetailsLoader}
-          action={productDetailsAction}
-        />
-
-        <Route path="/checkout">
           <Route
-            index
-            element={<Checkout />}
-            loader={checkoutLoader}
-            action={checkoutAction}
+            path="non-coffee/:id"
+            element={<ProductDetails />}
+            loader={productDetailsLoader}
+            action={productDetailsAction}
           />
-          <Route path="payment-method" element={<PaymentMethod />} />
-          <Route path="vouchers" element={<Vouchers />} />
+          <Route
+            path="pastry/:id"
+            element={<ProductDetails />}
+            loader={productDetailsLoader}
+            action={productDetailsAction}
+          />
+
+          <Route path="checkout" errorElement={<NoCheckoutError />}>
+            <Route
+              index
+              element={<Checkout />}
+              loader={checkoutLoader}
+              action={checkoutAction}
+            />
+            <Route path="payment-method" element={<PaymentMethod />} />
+            <Route path="vouchers" element={<Vouchers />} />
+          </Route>
+
+          <Route
+            path="receipt/:id"
+            element={<Receipt />}
+            loader={receiptLoader}
+          />
+          <Route path="/receipt/:id/track" element={<Track />} />
+
+          <Route
+            path="history"
+            element={<HistoryLayout />}
+            loader={historyLayoutLoader}
+          >
+            <Route index element={<Process />} loader={processLoader} />
+            <Route path="done" element={<Done />} loader={doneLoader} />
+          </Route>
+          <Route path="review" element={<Review />} action={reviewAction} />
         </Route>
 
-        <Route
-          path="/receipt/:id"
-          element={<Receipt />}
-          loader={receiptLoader}
-        />
-        <Route path="/receipt/:id/track" element={<Track />} />
-
-        <Route
-          path="/history"
-          element={<HistoryLayout />}
-          loader={historyLayoutLoader}
-        >
-          <Route index element={<Process />} loader={processLoader} />
-          <Route path="done" element={<Done />} loader={doneLoader} />
-        </Route>
-        <Route path="/review" element={<Review />} action={reviewAction} />
+        <Route path="*" element={<NotFound />} />
       </>
     )
   );
 
   return (
-    <UserProvider>
-      <RouterProvider router={routes} />{" "}
-    </UserProvider>
+    <UserEmailProvider>
+      <RouterProvider router={routes} />;
+    </UserEmailProvider>
   );
 }

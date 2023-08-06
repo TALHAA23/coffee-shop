@@ -31,24 +31,25 @@ export default function Track() {
   }, []);
 
   function goToReview() {
-    navigate("/review", {
-      state: {
+    localStorage.setItem(
+      "reviewOrigin",
+      JSON.stringify({
         receiptId: state.receiptId,
         productId: state.itemList[0].productId,
-      },
-    });
+      })
+    );
+    navigate("/review");
   }
 
   const trackElement = state.itemList.map((item) => (
     <div key={item.item}>
+      <img src={item.img} />
       <div>
         <h4>{item.item}</h4>
         <p>{item.desc}</p>
       </div>
       <p>
-        <b>
-          x{JSON.parse(localStorage.getItem("perItemQuantityRef"))[item.item]}
-        </b>
+        <b>x{item.quantity}</b>
       </p>
     </div>
   ));

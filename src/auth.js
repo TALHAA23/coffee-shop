@@ -1,7 +1,8 @@
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut
 } from "firebase/auth";
 import {
     auth
@@ -37,4 +38,12 @@ export async function getSignedInUser() {
     onAuthStateChanged(auth, user => {
         localStorage.setItem('userAuth', user.email)
     })
+}
+
+export async function signOutUser() {
+    try {
+        auth.signOut()
+    } catch (err) {
+        return err
+    }
 }

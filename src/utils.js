@@ -34,76 +34,24 @@ function sleep() {
     return new Promise(resolve => setTimeout(resolve, 3000))
 }
 
-export async function registerUser(creds) {
-
+export async function getProducts() {
     await sleep();
-    return {
-        message: 'success'
-    }
-
     try {
-        addDoc(usersCollection, creds);
-    } catch (e) {
-        throw new Error(e)
-    }
-    return {
-        message: "Users Registered successfully"
-    }
-}
-
-export async function loginUser({
-    email,
-    password
-}) {
-    const userQuery = query(usersCollection, where("email", "==", email), where("password", "==", password));
-    const querySnapshot = await getDocs(userQuery);
-
-    if (querySnapshot.empty)
-        throw new Error('No User Found!')
-
-    return {
-        message: 'user exists'
-    }
-}
-
-export async function getProducts(productOrigin) {
-    await sleep();
-    // console.log(productOrigin)
-    // const data = [{
-    //     title: "some title",
-    //     price: {
-    //         originalPrice: 23,
-    //         salePrice: 10
-    //     },
-    //     imgUrl: '/coffee-images/caffe-mocha.png',
-    //     origin: 'non-coffee',
-    //     rating: 3.4,
-    //     desc: 'this is a long desc that your are reading right know'
-    // }];
-    // if (data.origin != productOrigin) return [];
-    // return data;
-
-    const data = [];
-
-    try {
-        await getDocs(productsCollection).then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const docData = doc.data();
-                if (docData.origin == productOrigin)
-                    data.push({
-                        id: doc.id,
-                        ...docData
-                    });
-            });
-        })
+        const products = await getDocs(productsCollection);
+        const data = products.docs.map(product => ({
+            id: product.id,
+            ...product.data()
+        }))
+        if (!data.length)
+            throw new Error("Coffee Shop has no product");
+        return data;
     } catch (err) {
-        throw err
+        throw new Error(err.message)
     }
-    return data;
 }
 
 export async function getProductById(id) {
-    await sleep();
+    // await sleep();
     // return {
     //     title: "some title",
     //     price: {
@@ -113,9 +61,10 @@ export async function getProductById(id) {
     //     imgUrl: '/coffee-images/caffe-mocha.png',
     //     origin: 'non-coffee',
     //     rating: 3.4,
+    //     reviews: [],
     //     desc: 'this is a long desc that your are reading right know'
     // };
-    await calculateAverageRating(id)
+
     const docRef = doc(productsCollection, id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists())
@@ -125,12 +74,11 @@ export async function getProductById(id) {
 
 export async function saveOrder(creds) {
     // await sleep();
-    // return '000120324'
     try {
         const docRef = await addDoc(ordersCollection, creds);
         return docRef.id;
     } catch (err) {
-        return err;
+        throw new Error('Something went wrong!')
     }
 }
 
@@ -144,27 +92,33 @@ export async function getOrderById(id) {
     else throw new Error("Order Doesn't exist")
 }
 
-export async function getMyCheckouts(id) {
-    const checkoutQuery = query(ordersCollection, where("id", "==", id));
+export async function getMyCheckouts(userUid) {
+    const checkoutQuery = query(ordersCollection, where("userUid", "==", userUid));
     const querySnapshot = await getDocs(checkoutQuery);
     const checkouts = [];
 
     querySnapshot.forEach(snapShot => {
-        checkouts.push(snapShot.data())
+        checkouts.push({
+            orderNumber: snapShot.id,
+            ...snapShot.data()
+        })
     })
 
-
     if (querySnapshot.empty)
-        throw new Error('No Checkout exist on the Id!')
+        throw new Error('Cart is Empty')
 
     return checkouts
 }
 
-export async function deleteCheckouts(id) {
-    console.log(id)
-    const query = Query(ordersCollection, where('id', '==', id));
-    const querySnapshot = await getDocs(query);
+export async function deleteCheckoutById(id) {
+    await sleep()
+    const docRef = doc(ordersCollection, id);
+    await deleteDoc(docRef)
+}
 
+export async function deleteCheckouts(userUid) {
+    const query = Query(ordersCollection, where('userUid', '==', userUid));
+    const querySnapshot = await getDocs(query);
 
     querySnapshot.forEach(async snapshot => {
         console.log(snapshot.data())
@@ -175,10 +129,10 @@ export async function deleteCheckouts(id) {
 export async function saveReceipt(creds) {
     try {
         const receiptRef = await addDoc(receiptsCollection, creds);
-        await deleteCheckouts('33333')
+        await deleteCheckouts(creds.userUid)
         return receiptRef.id
     } catch (err) {
-        throw err
+        throw new Error('Something went wrong')
     }
 }
 
@@ -197,19 +151,19 @@ export async function getReceiptById(id) {
 
 }
 
-export async function getAllReceipt(auth) {
-    const query = Query(receiptsCollection, where('auth', '==', auth));
-    const querySnapshot = await getDocs(query);
-    const receipts = [];
+export async function getAllReceipt(userUid) {
+    const query = Query(receiptsCollection, where('userUid', '==', userUid));
 
-    querySnapshot.forEach(snapshot => {
-        receipts.push({
-            id: snapshot.id,
-            ...snapshot.data()
-        })
-    })
-
-    return receipts;
+    try {
+        const querySnapshot = await getDocs(query)
+        const receipts = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }))
+        return receipts;
+    } catch (err) {
+        throw new Error("Faild to Fetch Receipts")
+    }
 }
 
 export async function addReview(creds) {
@@ -218,8 +172,34 @@ export async function addReview(creds) {
     return docRef.id;
 }
 
-export async function isReviewDone(receiptId, productId) {
-    const query = Query(reviewsCollection, where('from', '==', receiptId), where('to', '==', productId));
+async function redirectReview(creds) {
+    const docRef = doc(productsCollection, creds.to);
+
+    const newReview = {
+        rating: creds.rating,
+        review: creds.review,
+        receiptRef: creds.from
+    }
+
+    // await updateDoc(docRef, {
+    //     reviews: arrayUnion(newReview),
+    //     rating: await calculateAverageRating(creds.to).then((average) => average == 0 ? newReview.rating : average)
+    // })
+    await updateDoc(docRef, {
+        reviews: arrayUnion(newReview),
+    })
+
+    console.log('add to:', calculateAverageRating(creds.to))
+
+    await updateDoc(docRef, {
+        rating: await calculateAverageRating(creds.to)
+    })
+
+}
+
+export async function isReviewDone(userUid, receiptId, productId) {
+    console.log(userUid)
+    const query = Query(reviewsCollection, where('userUid', '==', userUid), where('from', '==', receiptId), where('to', '==', productId));
     const querySnapshot = await getDocs(query);
     return {
         docRef: querySnapshot.docs[0].id,
@@ -236,21 +216,6 @@ export async function updateReview(ref, creds) {
     return {
         message: 'review Updated'
     }
-}
-async function redirectReview(creds) {
-    const docRef = doc(productsCollection, creds.to);
-
-    const newReview = {
-        rating: creds.rating,
-        review: creds.review,
-        receiptRef: creds.from
-    }
-
-    await updateDoc(docRef, {
-        reviews: arrayUnion(newReview),
-        rating: await calculateAverageRating(creds.to)
-    })
-
 }
 
 async function redirectUpdatedReview(creds) {
@@ -270,36 +235,34 @@ async function redirectUpdatedReview(creds) {
         review: creds.review,
         receiptRef: creds.from
     }
-
-    batch.update(docRef, {
+    await updateDoc(docRef, {
         reviews: arrayRemove(oldReview)
-    });
-    batch.update(docRef, {
+    })
+    await updateDoc(docRef, {
         reviews: arrayUnion(newReview)
-    });
-    await batch.commit();
-
+    })
     await updateDoc(docRef, {
         rating: await calculateAverageRating(creds.to)
     })
-
 }
 
 async function calculateAverageRating(productId) {
     const docRef = doc(productsCollection, productId);
     const docReviews = (await getDoc(docRef)).get('reviews');
     const rating = docReviews.map(review => review.rating);
-    const sumOfRating = rating.reduce((partialSum, rate) => parseInt(partialSum) + parseInt(rate), 0);
-    const averageRating = sumOfRating / rating.length;
+    console.log('array', rating);
+    const sumOfRating = rating.reduce((partialSum, rate) => parseInt(partialSum) + parseInt(rate) || 0, 0);
+    console.log(sumOfRating)
+    const averageRating = sumOfRating / (rating.length || 1);
 
-    return averageRating.toFixed(1)
+    return parseInt(averageRating)
 }
 
-export async function getAllReviewsTo() {
+export async function getAllReviews() {
     const reviews = (await getDocs(reviewsCollection)).docs;
-    const reviewTo = reviews.map(review => ({
+    const reviewToFrom = reviews.map(review => ({
         from: review.data().from,
         to: review.data().to
     }));
-    return reviewTo
+    return reviewToFrom
 }

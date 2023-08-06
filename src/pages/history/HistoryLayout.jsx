@@ -10,13 +10,17 @@ import {
 } from "react-router-dom";
 import { Suspense } from "react";
 import { getAllReceipt } from "../../utils";
+import { useUserUid } from "../../hooks/UserProvider";
+import { Loading } from "../../components/LoadingComponent";
 
-export function loader() {
-  const receiptsPromise = getAllReceipt("myorder1");
+export function loader({ request }) {
+  const userUid = new URL(request.url).searchParams.get("auth");
+  const receiptsPromise = getAllReceipt(userUid);
   return defer({ receiptsPromise });
 }
 
 export default function HistoryLayout() {
+  const { userUid } = useUserUid();
   const dataPromise = useLoaderData();
   const { pathname } = useLocation();
 
@@ -54,7 +58,10 @@ export default function HistoryLayout() {
       <div className="history">
         <div className="history--layout">
           <NavLink
-            to="/history"
+            to={{
+              pathname: "/history",
+              search: userUid ? `?auth=${userUid}` : "",
+            }}
             end
             className={({ isActive }) =>
               isActive ? "solidUnderLine" : "lightUnderLine"
@@ -64,7 +71,10 @@ export default function HistoryLayout() {
             <div className="layout-nav--underline--solid layout-nav--underline--light"></div>
           </NavLink>
           <NavLink
-            to="done"
+            to={{
+              pathname: "/history/done",
+              search: userUid ? `?auth=${userUid}` : "",
+            }}
             className={({ isActive }) =>
               isActive ? "solidUnderLine" : "lightUnderLine"
             }
@@ -73,7 +83,7 @@ export default function HistoryLayout() {
             <div className="layout-nav--underline--solid layout-nav--underline--light"></div>
           </NavLink>
         </div>
-        <Suspense fallback={<h1>Loading</h1>}>
+        <Suspense fallback={<Loading />}>
           <Await resolve={dataPromise.receiptsPromise}>{renderOutlet}</Await>
         </Suspense>
       </div>

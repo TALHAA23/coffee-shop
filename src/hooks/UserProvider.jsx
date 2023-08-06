@@ -1,27 +1,34 @@
-import { createContext, useContext, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { createContext, useContext, useState, useEffect } from "react";
+import { auth } from "../firebase";
 
-const UserContext = createContext();
-const UserUpdateContext = createContext();
+const UserEmailContext = createContext(undefined);
 
-export function useUser() {
-  return useContext(UserContext);
-}
+export const UserEmailProvider = function ({ children }) {
+  var [userUid, setUserUid] = useState(null);
 
-export function useUpdateUser() {
-  return useContext(UserUpdateContext);
-}
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      setUserUid(user ? user.uid : null);
+    });
+  }, []);
 
-export default function UserProvider({ children }) {
-  const [user, setUser] = useState(null);
-  function updateUser(email) {
-    setUser(email);
+  var value = {
+    userUid,
+  };
+  return (
+    <UserEmailContext.Provider value={value}>
+      {children}
+    </UserEmailContext.Provider>
+  );
+};
+
+export const useUserUid = function () {
+  const context = useContext(UserEmailContext);
+
+  if (context === undefined) {
+    throw new Error("useUserUid must be used within a UserEmailProvider");
   }
 
-  return (
-    <UserContext.Provider value={user}>
-      <UserUpdateContext.Provider value={updateUser}>
-        {children}
-      </UserUpdateContext.Provider>
-    </UserContext.Provider>
-  );
-}
+  return context;
+};

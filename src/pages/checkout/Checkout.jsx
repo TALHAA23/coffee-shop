@@ -10,17 +10,19 @@ import {
   useNavigation,
 } from "react-router-dom";
 import { Suspense } from "react";
-import { useUser } from "../../hooks/UserProvider";
 import CheckoutProduct from "../../components/CheckoutProduct";
 import { useEffect, useState } from "react";
 import { TimePicker } from "react-ios-time-picker";
 import { getMyCheckouts } from "../../utils";
 import { saveReceipt } from "../../utils";
+import { useUserUid } from "../../hooks/UserProvider";
+import { Loading } from "../../components/LoadingComponent";
+import { nanoid } from "nanoid";
 
 export async function action({ request }) {
   const formData = await request.formData();
+  const userUid = formData.get("userUid");
   const price = formData.get("price");
-  // const deliveryTime = formData.get("deliveryTime");
   const estimate = formData.get("estimateTime");
   const paymentMethod = formData.get("payment-method");
   const voucher = formData.get("voucher");
@@ -28,26 +30,35 @@ export async function action({ request }) {
   const total = formData.get("total");
 
   const data = {
+    userUid,
     price,
-    // deliveryTime,
     estimate,
     paymentMethod,
     voucher,
     itemList,
     total,
   };
-  await new Promise((res) => setTimeout(res, 3000));
 
   const orderNumber = await saveReceipt(data);
+  localStorage.removeItem("perItemQuantityRef");
   throw redirect(`/receipt/${orderNumber}`);
   return null;
 }
-export function loader() {
-  const checkoutPromise = getMyCheckouts("33333");
+export function loader({ request }) {
+  const auth = new URL(request.url).searchParams.get("auth");
+  if (!auth) throw new Error("Hmmm Something went wrong");
+  localStorage.removeItem("orderNumber");
+  const checkoutPromise = getMyCheckouts(auth);
   return defer({ checkoutPromise });
 }
 
 export default function Checkout() {
+  const { userUid } = useUserUid();
+  const auth = new URLSearchParams(location.search).get("auth");
+  if (auth != userUid)
+    throw new Error(
+      "Thing are not the same since you visit, Please try visiting again"
+    );
   const dataPromise = useLoaderData();
   const { state } = useLocation();
   const navigation = useNavigation();
@@ -94,6 +105,7 @@ export default function Checkout() {
           {...checkout}
           changeCost={setCurrentCost}
           changeItemCount={setItemCounter}
+          changeItemList={setitemList}
         />
       );
     });
@@ -121,7 +133,7 @@ export default function Checkout() {
           </Link>
           Checkout
         </div>
-        <Suspense fallback={<h1>Loading...</h1>}>
+        <Suspense fallback={<Loading />}>
           <Await resolve={dataPromise.checkoutPromise}>{renderCheckouts}</Await>
         </Suspense>
 
@@ -228,7 +240,9 @@ export default function Checkout() {
             <h3>${finalCost.toFixed(2)}</h3>
           </div>
           <button
-            disabled={itemList.length ? false : true}
+            disabled={
+              itemList.length && navigation.state == "idle" ? false : true
+            }
             className="button"
             form="checkout-form"
             type="submit"
@@ -244,6 +258,7 @@ export default function Checkout() {
 
       <Form id="checkout-form" method="post">
         <input hidden readOnly type="number" name="price" value={currentCost} />
+        <input hidden readOnly type="text" name="userUid" value={userUid} />
         <input
           hidden
           readOnly

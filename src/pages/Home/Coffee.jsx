@@ -4,10 +4,15 @@ import {
   Await,
   useSearchParams,
   Link,
+  useOutletContext,
+  useLocation,
 } from "react-router-dom";
 import { Suspense } from "react";
 import Product from "../../components/Product";
+import Filters from "../../components/Filters";
+import { useFilter } from "../../hooks/FiltersProvider";
 import { getProducts } from "../../utils";
+import { Loading } from "../../components/LoadingComponent";
 
 export function loader({ request }) {
   const url = new URL(request.url).pathname.split("/")[1];
@@ -16,37 +21,39 @@ export function loader({ request }) {
 }
 
 export default function Coffee() {
-  const [searchParams, setSearchParmas] = useSearchParams();
-
-  const dataPromise = useLoaderData();
-  const [ratingFilter, priceFilter, promoFilter] = [
-    searchParams.get("rating"),
-    searchParams.get("price"),
-    searchParams.get("promo"),
-  ];
+  const dataPromise = useOutletContext();
+  const location = useLocation();
+  const { filters } = useFilter();
 
   function renderCoffees(coffees) {
-    if (ratingFilter)
-      coffees = coffees.filter(
-        (coffee) => coffee.rating >= parseFloat(ratingFilter)
+    const productOrigin = location.pathname.split("/")[1] || "coffee";
+    let displayedCoffee = coffees.filter(
+      (coffee) => coffee.origin == productOrigin
+    );
+    if (filters.includes("rating"))
+      displayedCoffee = displayedCoffee.filter(
+        (coffee) => coffee.rating >= 4.5
       );
-    if (promoFilter)
-      coffees = coffees.filter((coffee) => coffee.price.salePrice > 0);
+    if (filters.includes("promo"))
+      displayedCoffee = displayedCoffee.filter(
+        (coffee) => coffee.price.salePrice > 0
+      );
 
-    if (priceFilter)
-      coffees = coffees.sort(
+    if (filters.includes("price"))
+      displayedCoffee = displayedCoffee.sort(
         (a, b) => a.price.originalPrice - b.price.originalPrice
       );
 
-    const coffeeElements = coffees.map((coffee) => (
+    const coffeeElements = displayedCoffee.map((coffee) => (
       <Product key={coffee.id} {...coffee} />
     ));
     return coffeeElements;
   }
   return (
     <>
-      <Suspense fallback={<h1>Loading...</h1>}>
-        <Await resolve={dataPromise.coffeePromise}>{renderCoffees}</Await>
+      <Filters />
+      <Suspense fallback={<Loading />}>
+        <Await resolve={dataPromise}>{renderCoffees}</Await>
       </Suspense>
     </>
   );

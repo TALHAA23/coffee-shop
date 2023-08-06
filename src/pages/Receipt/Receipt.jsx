@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { getReceiptById } from "../../utils";
 import { Suspense } from "react";
-import FullScreenLoading from "../../components/FullScreenLoading";
+import { FullScreenLoading } from "../../components/LoadingComponent";
 
 export function loader({ params }) {
   const receiptId = params.id;
@@ -29,9 +29,7 @@ export default function Receipt() {
           <p>{item.desc}</p>
         </div>
         <p>
-          <b>
-            x{JSON.parse(localStorage.getItem("perItemQuantityRef"))[item.item]}
-          </b>
+          <b>x{item.quantity}</b>
         </p>
       </div>
     ));

@@ -3,7 +3,9 @@ import { vouchers } from "../Constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Voucher from "../../components/Voucher";
 import { useState } from "react";
+import { useUserUid } from "../../hooks/UserProvider";
 export default function Vouchers() {
+  const { userUid } = useUserUid();
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -14,7 +16,7 @@ export default function Vouchers() {
   }
 
   function backToCheckout() {
-    navigate("..", {
+    navigate(`..?auth=${userUid}`, {
       state: {
         ...state,
         discount: selectedVoucher?.disc,

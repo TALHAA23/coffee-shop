@@ -13,7 +13,7 @@ export default function Product(props) {
         <img className="coffeeImg" src={props.imgUrl} />
         <div className="coffee--rating">
           <img src="/icons/star-yellow.svg" />
-          <span>{props.rating}</span>
+          <span>{parseFloat(props.rating).toFixed(1)}</span>
         </div>
       </div>
 

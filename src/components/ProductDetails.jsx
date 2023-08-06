@@ -10,11 +10,13 @@ import {
   Navigate,
   redirect,
 } from "react-router-dom";
+import { Loading } from "./LoadingComponent";
 import { getProductById } from "../utils";
+import ReviewsSection from "./ReviewsSection";
 import { Suspense, useEffect, useState } from "react";
 import { TOPPING } from "../pages/Constants";
 import { saveOrder } from "../utils";
-import { useUser } from "../hooks/UserProvider";
+import { useUserUid } from "../hooks/UserProvider";
 
 export function loader({ params }) {
   const productId = params.id;
@@ -26,7 +28,8 @@ export async function action({ request }) {
   const formData = await request.formData();
   const pathname = new URL(request.url).pathname.split("/");
   const productId = pathname[pathname.length - 1];
-  const id = formData.get("id");
+  // const id = formData.get("id");
+  const userUid = formData.get("userUid");
   const title = formData.get("title");
   const desc = formData.get("desc");
   const total = formData.get("total");
@@ -34,7 +37,7 @@ export async function action({ request }) {
   const imgSrc = formData.get("imgSrc");
   const PERITEMCOST = formData.get("PERITEMCOST");
   const orderInfo = {
-    id,
+    userUid,
     productId,
     PERITEMCOST,
     imgSrc,
@@ -44,25 +47,28 @@ export async function action({ request }) {
     quantity,
   };
 
-  // try {
-  //   const orderNumber = await saveOrder(orderInfo).then((res) => res);
-  //   localStorage.setItem("orderNumber", orderNumber);
-  //   throw redirect("/");
-  // } catch (err) {
-  //   return err;
-  // }
+  try {
+    const orderNumber = await saveOrder(orderInfo).then((res) => res);
+    localStorage.setItem("orderNumber", orderNumber);
+    throw redirect("/");
+  } catch (err) {
+    return err;
+  }
   return null;
 }
 
 export default function ProductDetails() {
+  const { userUid } = useUserUid();
   const actionResponse = useActionData();
   const { state } = useLocation();
   const navigation = useNavigation();
   const dataPromise = useLoaderData();
+  const location = useLocation();
   const [counter, setCounter] = useState(1);
   const [currentCost, setCurrentCost] = useState(null);
   const [productPrice, setProductPrice] = useState(null);
   const [totalToppingCost, setTotalToppingCost] = useState(0);
+  const [reviewsSection, toggleReviewSection] = useState(false);
 
   function incrementCount() {
     setCounter((prevCount) => prevCount + 1);
@@ -98,6 +104,13 @@ export default function ProductDetails() {
     }, []);
     return (
       <div className="productDetailsWrapper">
+        {!userUid && (
+          <div className="sign-in-warning">
+            <Link to={`/login?redirect=${location.pathname}`}>
+              You must be sign-in before making order, click to sign-in
+            </Link>
+          </div>
+        )}
         {actionResponse && (
           <p className="form-success order-form-state">
             {actionResponse.message}
@@ -135,10 +148,13 @@ export default function ProductDetails() {
                 </div>
               </div>
             </div>
-            <div className="aboutProducts--rating">
+            <div
+              className="aboutProducts--rating"
+              onClick={() => toggleReviewSection((prevValue) => !prevValue)}
+            >
               <div className="aboutProducts--rating--detials">
                 <img src="/icons/star-yellow.svg" /> <b>{props.rating}</b>{" "}
-                <span>(23)</span>
+                <span>({props.reviews.length})</span>
                 <span className="dot-divider"></span>{" "}
                 <span>Rating and reviews</span>
               </div>
@@ -274,16 +290,20 @@ export default function ProductDetails() {
             </div>
             <button
               className="button"
-              disabled={navigation.state == "submitting" ? true : false}
+              disabled={
+                navigation.state == "submitting" || !userUid ? true : false
+              }
             >
-              {navigation.state == "submitting"
+              {!userUid
+                ? "REQUIRE SIGN-IN"
+                : navigation.state == "submitting"
                 ? "Adding Order..."
                 : "Add Order"}
             </button>
           </div>
 
           <div className="hiddenInputs">
-            <input hidden readOnly type="text" name="id" value="22222" />
+            <input hidden readOnly type="text" name="userUid" value={userUid} />
             <input
               hidden
               readOnly
@@ -329,11 +349,20 @@ export default function ProductDetails() {
             <input hidden readOnly type="text" name="desc" value={props.desc} />
           </div>
         </Form>
+
+        <div
+          className={`review-section ${!reviewsSection ? "hide-reviews" : ""}`}
+        >
+          <ReviewsSection
+            reviews={props.reviews}
+            toggleReviewSection={toggleReviewSection}
+          />
+        </div>
       </div>
     );
   }
   return (
-    <Suspense fallback={<h1>Loading...</h1>}>
+    <Suspense fallback={<Loading />}>
       <Await resolve={dataPromise.productDetailsPromise}>
         {renderProductDetails}
       </Await>
