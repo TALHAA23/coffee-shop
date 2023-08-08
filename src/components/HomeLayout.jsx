@@ -6,14 +6,13 @@ import {
   useSearchParams,
   Await,
 } from "react-router-dom";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import Nav from "./Nav";
 import Promo from "./Promo";
-import Filters from "./Filters";
 import { getProducts, getOrderById } from "../utils";
-import { getSignedInUser } from "../auth";
 
 import FiltersProvider from "../hooks/FiltersProvider";
+import { useUserUid } from "../hooks/UserProvider";
 
 export async function loader() {
   const orderNumber = localStorage.getItem("orderNumber");
@@ -23,9 +22,11 @@ export async function loader() {
 }
 
 export default function HomeLayout() {
+  const { userUid } = useUserUid();
   const [searchParams, setSearchParams] = useSearchParams();
   const restoreParams = searchParams.toString();
   const dataPromise = useLoaderData();
+
   function popOrderConfirmation(orderInfo) {
     if (!orderInfo) return null;
     localStorage.removeItem("orderNumber");

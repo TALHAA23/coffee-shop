@@ -12,7 +12,9 @@ export default function BoardingLayout() {
 
   return (
     <section className="boardingLayout">
-      <Link className="boardingLayout--skip">Skip</Link>
+      <Link to="/" className="boardingLayout--skip">
+        Skip
+      </Link>
       <Outlet />
       <div className="boardingLayout--footer">
         <div className="boardingLayout--dots">
